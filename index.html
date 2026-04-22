@@ -6,7 +6,6 @@
 <title>Dashboard de Feedbacks — Shopee WMS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  /* Estilos omitidos para brevidade, mantendo os originais que você enviou */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --shopee:      #EE4D2D;
@@ -19,30 +18,30 @@
     --text-1:      #212121;
     --text-2:      #757575;
     --text-3:      #BDBDBD;
+    --pending:     #F57C00;
+    --done:        #2E7D32;
     --radius:      10px;
     --shadow:      0 1px 4px rgba(0,0,0,0.08);
   }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text-1); font-size: 14px; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text-1); font-size: 14px; }
   .topnav { background: var(--shopee); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; box-shadow: 0 2px 8px rgba(238,77,45,.35); position: sticky; top: 0; z-index: 100; }
   .nav-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 18px; }
   .nav-badge { background: rgba(255,255,255,.18); color: #fff; font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,.3); }
-  .page { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
+  .page { max-width: 1280px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
   .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; gap: 16px; }
   .spinner { width: 40px; height: 40px; border: 3px solid var(--shopee-light); border-top-color: var(--shopee); border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .error-box { background: #fff3f0; border: 1px solid #ffc4b5; border-radius: var(--radius); padding: 2rem; text-align: center; max-width: 600px; }
-  .error-box code { display: block; background: #eee; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 11px; word-break: break-all; }
-  .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1rem; }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .mcard { background: var(--surface); border-radius: var(--radius); padding: 1.2rem; border-bottom: 3px solid var(--shopee); }
-  .mcard-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; margin-bottom: 5px; }
-  .mcard-value { font-size: 24px; font-weight: 700; }
-  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .section-header { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 .8rem; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-2); }
-  .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .error-box code { display: block; background: #fafafa; border: 1px solid #ddd; padding: 10px; margin: 12px 0; font-size: 11px; word-break: break-all; color: #c03b20; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .mcard { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); border: 1px solid var(--border); border-bottom: 3px solid var(--shopee); }
+  .mcard-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+  .mcard-value { font-size: 28px; font-weight: 700; color: var(--text-1); }
+  .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; border: 1px solid var(--border); height: 100%; }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
   .bar-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
-  .bar-label { width: 150px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-track { flex: 1; height: 18px; background: #eee; border-radius: 4px; display: flex; overflow: hidden; }
+  .bar-label { width: 140px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 18px; background: #eee; border-radius: 4px; display: flex; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
   .bar-seg { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700; }
   @media(max-width: 768px) { .g2 { grid-template-columns: 1fr; } }
 </style>
@@ -52,46 +51,47 @@
 <nav class="topnav">
   <div class="nav-brand">Shopee | Dashboard WMS</div>
   <div class="nav-right">
-    <span class="nav-badge" id="nav-total">Carregando...</span>
+    <span class="nav-badge" id="nav-total">Conectando...</span>
   </div>
 </nav>
 
 <div class="page">
   <div id="loading-state" class="state-box">
     <div class="spinner"></div>
-    <p>Conectando ao Google Sheets...</p>
+    <p style="color: #757575;">Sincronizando dados da planilha...</p>
   </div>
 
   <div id="error-state" class="state-box" style="display:none">
     <div class="error-box">
       <h3>Erro na Conexão de Dados</h3>
-      <p>Não foi possível ler a planilha. Certifique-se que ela foi publicada como <strong>CSV</strong>.</p>
+      <p>Verifique se a planilha está publicada como <strong>CSV</strong> e se o link está correto.</p>
       <code id="error-url"></code>
+      <button onclick="location.reload()" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Tentar Novamente</button>
     </div>
   </div>
 
   <div id="dashboard" style="display:none">
     <div class="metrics">
-      <div class="mcard"><div class="mcard-label">Total Feedbacks</div><div class="mcard-value" id="m-total">0</div></div>
-      <div class="mcard" style="border-color:#F57C00"><div class="mcard-label">Pendentes</div><div class="mcard-value" id="m-pending">0</div></div>
-      <div class="mcard" style="border-color:#2E7D32"><div class="mcard-label">Concluídos</div><div class="mcard-value" id="m-done">0</div></div>
-      <div class="mcard" style="border-color:#FFC400"><div class="mcard-label">Média Geral</div><div class="mcard-value" id="m-nota">0</div></div>
+      <div class="mcard"><div class="mcard-label">Total</div><div class="mcard-value" id="m-total">0</div></div>
+      <div class="mcard" style="border-color:var(--pending)"><div class="mcard-label">Pendentes</div><div class="mcard-value" style="color:var(--pending)" id="m-pending">0</div></div>
+      <div class="mcard" style="border-color:var(--done)"><div class="mcard-label">Concluídos</div><div class="mcard-value" style="color:var(--done)" id="m-done">0</div></div>
+      <div class="mcard" style="border-color:#FFC400"><div class="mcard-label">Média Nota</div><div class="mcard-value" id="m-nota">0</div></div>
     </div>
 
     <div class="g2">
       <div class="card">
-        <h4>Tipos de Feedback</h4>
-        <canvas id="tipoChart" height="200"></canvas>
+        <h4 style="margin-bottom:15px; font-size:12px; color:var(--text-2); text-transform:uppercase;">Volume por Tipo</h4>
+        <div style="height:250px;"><canvas id="tipoChart"></canvas></div>
       </div>
       <div class="card">
-        <h4>Status por Categoria</h4>
+        <h4 style="margin-bottom:15px; font-size:12px; color:var(--text-2); text-transform:uppercase;">Status por Categoria</h4>
         <div id="status-rows"></div>
       </div>
     </div>
 
-    <div class="section-header">Desempenho por Gestor</div>
     <div class="card">
-        <div id="gestor-rows"></div>
+      <h4 style="margin-bottom:15px; font-size:12px; color:var(--text-2); text-transform:uppercase;">Ranking por Gestor</h4>
+      <div id="gestor-rows"></div>
     </div>
   </div>
 </div>
@@ -99,40 +99,49 @@
 <script>
 /* ════════════════════════ CONFIGURAÇÃO ════════════════════════ */
 
-// 1. Cole aqui o link CSV (Publicar na web -> CSV)
+// 1. O SEU LINK DA PLANILHA (Verifique se termina em output=csv)
 const SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSADEp_-15N8tI6OgntuNOZFTvUAIv1XvLgZvmqnW0uwHhhq3dLFMPDvEwmrn46zD7BpsVbe0yAYAa8/pub?output=csv';
 
-// 2. Verifique se os nomes abaixo batem EXATAMENTE com o topo da sua planilha
+// 2. NOMES DAS COLUNAS (Exatamente como estão na Linha 1 da planilha)
 const COL = {
   dataHora:    'Data/Hora',
   tipo:        'Tipo de Feedback',
   status:      'Endereço Tratado ?',
   nota:        'Nota',
-  gestor:      'Gestor',
-  colaborador: 'Colaborador'
+  gestor:      'Gestor'
 };
 
 const STATUS_PENDING = 'Pendente';
 const STATUS_DONE    = 'Concluído';
 
-/* ════════════════════════ ENGINE (LÓGICA) ════════════════════════ */
+/* ════════════════════════ LÓGICA DO SISTEMA ════════════════════════ */
 
 let charts = {};
 
 async function loadData() {
+  const loading = document.getElementById('loading-state');
+  const errorBox = document.getElementById('error-state');
+  const dashboard = document.getElementById('dashboard');
+
   try {
-    const res = await fetch(SHEETS_CSV_URL + '&t=' + Date.now());
-    if (!res.ok) throw new Error('Falha no download');
-    const text = await res.text();
-    const rows = parseCSV(text);
+    // Cache buster para sempre pegar dados novos do Google
+    const response = await fetch(SHEETS_CSV_URL + '&t=' + Date.now());
+    if (!response.ok) throw new Error('Erro ao acessar CSV');
     
-    if (rows.length === 0) throw new Error('Planilha vazia');
+    const csvText = await response.text();
+    const rows = parseCSV(csvText);
+    
+    if (rows.length === 0) throw new Error('Planilha sem dados');
+
     renderDashboard(rows);
+    
+    loading.style.display = 'none';
+    dashboard.style.display = 'block';
   } catch (e) {
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('error-state').style.display = 'flex';
-    document.getElementById('error-url').textContent = SHEETS_CSV_URL;
     console.error(e);
+    loading.style.display = 'none';
+    errorBox.style.display = 'flex';
+    document.getElementById('error-url').textContent = SHEETS_CSV_URL;
   }
 }
 
@@ -140,8 +149,10 @@ function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
 
-  // Captura cabeçalhos tratando possíveis aspas
-  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  // Remove o BOM (caractere invisível que o Google gera às vezes) e aspas
+  const headers = lines[0].split(',').map(h => 
+    h.replace(/^"|"$/g, '').replace(/^\ufeff/, '').trim()
+  );
 
   return lines.slice(1).map(line => {
     const vals = [];
@@ -161,93 +172,107 @@ function parseCSV(text) {
       obj[h] = (vals[i] || '').replace(/^"|"$/g, '').trim();
     });
     return obj;
-  }).filter(r => r[COL.tipo]); // Ignora linhas sem tipo de feedback (vazias)
+  }).filter(r => r[COL.tipo] && r[COL.tipo] !== ""); // Ignora linhas vazias
 }
 
 function renderDashboard(rows) {
+  // Cálculos de Métricas
   const total = rows.length;
   const pending = rows.filter(r => r[COL.status] === STATUS_PENDING).length;
   const done = rows.filter(r => r[COL.status] === STATUS_DONE).length;
-  const notas = rows.map(r => parseFloat(r[COL.nota])).filter(n => !isNaN(n));
-  const avg = notas.length ? (notas.reduce((a,b)=>a+b,0)/notas.length).toFixed(1) : 0;
+  const notas = rows.map(r => parseFloat(r[COL.nota].replace(',', '.'))).filter(n => !isNaN(n));
+  const avgNota = notas.length ? (notas.reduce((a,b) => a+b, 0) / notas.length).toFixed(1) : "0.0";
 
-  // UI Básica
-  document.getElementById('nav-total').textContent = total + ' Registros';
+  document.getElementById('nav-total').textContent = total + ' registros';
   document.getElementById('m-total').textContent = total;
   document.getElementById('m-pending').textContent = pending;
   document.getElementById('m-done').textContent = done;
-  document.getElementById('m-nota').textContent = avg + '★';
+  document.getElementById('m-nota').textContent = avgNota + '★';
 
-  // Gráfico de Tipos
-  const tipos = {};
-  rows.forEach(r => { 
-    const t = r[COL.tipo] || 'Outros';
-    tipos[t] = (tipos[t] || 0) + 1;
+  // Gráfico de Pizza (Tipos)
+  const tipoCounts = {};
+  rows.forEach(r => {
+    const t = r[COL.tipo] || 'Não informado';
+    tipoCounts[t] = (tipoCounts[t] || 0) + 1;
   });
 
-  const ctx = document.getElementById('tipoChart').getContext('2d');
+  const ctxTipo = document.getElementById('tipoChart').getContext('2d');
   if(charts.tipo) charts.tipo.destroy();
-  charts.tipo = new Chart(ctx, {
+  charts.tipo = new Chart(ctxTipo, {
     type: 'doughnut',
     data: {
-      labels: Object.keys(tipos),
+      labels: Object.keys(tipoCounts),
       datasets: [{
-        data: Object.values(tipos),
-        backgroundColor: ['#EE4D2D', '#F57C00', '#2E7D32', '#1565C0', '#9E9E9E']
+        data: Object.values(tipoCounts),
+        backgroundColor: ['#EE4D2D', '#F57C00', '#2E7D32', '#1565C0', '#673AB7', '#FFC107'],
+        borderWidth: 2,
+        hoverOffset: 10
       }]
     },
-    options: { responsive: true, maintainAspectRatio: false }
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+    }
   });
 
-  // Lista de Status por Tipo
-  const statusTipo = {};
+  // Barras de Status por Tipo
+  const statusPorTipo = {};
   rows.forEach(r => {
     const t = r[COL.tipo];
-    if(!statusTipo[t]) statusTipo[t] = { p: 0, d: 0 };
-    if(r[COL.status] === STATUS_PENDING) statusTipo[t].p++;
-    if(r[COL.status] === STATUS_DONE) statusTipo[t].d++;
+    if(!statusPorTipo[t]) statusPorTipo[t] = { p: 0, d: 0 };
+    if(r[COL.status] === STATUS_PENDING) statusPorTipo[t].p++;
+    else if(r[COL.status] === STATUS_DONE) statusPorTipo[t].d++;
   });
 
   const stDiv = document.getElementById('status-rows');
-  stDiv.innerHTML = Object.entries(statusTipo).map(([nome, v]) => `
-    <div class="bar-row">
-      <span class="bar-label">${nome}</span>
-      <div class="bar-track">
-        <div class="bar-seg" style="width:${(v.p/(v.p+v.d)*100)}%; background:#F57C00">${v.p || ''}</div>
-        <div class="bar-seg" style="width:${(v.d/(v.p+v.d)*100)}%; background:#2E7D32">${v.d || ''}</div>
+  stDiv.innerHTML = Object.entries(statusPorTipo).sort((a,b) => (b[1].p+b[1].d) - (a[1].p+a[1].d)).map(([tipo, v]) => {
+    const totalRow = v.p + v.d;
+    const pPct = (v.p / totalRow * 100).toFixed(0);
+    const dPct = (v.d / totalRow * 100).toFixed(0);
+    return `
+      <div class="bar-row">
+        <span class="bar-label" title="${tipo}">${tipo}</span>
+        <div class="bar-track">
+          ${v.p > 0 ? `<div class="bar-seg" style="width:${pPct}%; background:var(--pending);" title="Pendente">${v.p}</div>` : ''}
+          ${v.d > 0 ? `<div class="bar-seg" style="width:${dPct}%; background:var(--done);" title="Concluído">${v.d}</div>` : ''}
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   // Lista de Gestores
-  const gestores = {};
+  const gestorMap = {};
   rows.forEach(r => {
     const g = r[COL.gestor] || 'Sem Gestor';
-    if(!gestores[g]) gestores[g] = { total: 0, nota: [] };
-    gestores[g].total++;
-    const n = parseFloat(r[COL.nota]);
-    if(!isNaN(n)) gestores[g].nota.push(n);
+    if(!gestorMap[g]) gestorMap[g] = { total: 0, notas: [] };
+    gestorMap[g].total++;
+    const n = parseFloat(r[COL.nota].replace(',', '.'));
+    if(!isNaN(n)) gestorMap[g].notas.push(n);
   });
 
   const gDiv = document.getElementById('gestor-rows');
-  gDiv.innerHTML = Object.entries(gestores)
-    .sort((a,b) => b[1].total - a[1].total)
-    .map(([nome, dados]) => {
-        const m = dados.nota.length ? (dados.nota.reduce((a,b)=>a+b,0)/dados.nota.length).toFixed(1) : '0';
-        return `
-            <div class="bar-row">
-                <span class="bar-label" style="width:200px">${nome}</span>
-                <span style="width:100px; font-size:12px">Vol: <b>${dados.total}</b></span>
-                <span style="color:#EE4D2D; font-weight:700">${m} ★</span>
+  gDiv.innerHTML = Object.entries(gestorMap)
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([nome, d]) => {
+      const media = d.notas.length ? (d.notas.reduce((a,b)=>a+b,0)/d.notas.length).toFixed(1) : '0.0';
+      return `
+        <div class="bar-row">
+          <span class="bar-label" style="width:200px;">${nome}</span>
+          <span style="width:80px; font-size:12px; color:var(--text-2);">Vol: <b>${d.total}</b></span>
+          <div style="flex:1; display:flex; align-items:center; gap:5px;">
+            <div style="height:8px; background:#f0f0f0; flex:1; border-radius:4px; overflow:hidden;">
+              <div style="height:100%; background:#EE4D2D; width:${(media*10)}%;"></div>
             </div>
-        `;
+            <span style="font-size:11px; font-weight:700; min-width:30px;">${media}★</span>
+          </div>
+        </div>
+      `;
     }).join('');
-
-  document.getElementById('loading-state').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
 }
 
-loadData();
+// Iniciar
+window.onload = loadData;
 </script>
 </body>
 </html>
