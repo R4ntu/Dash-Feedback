@@ -13,6 +13,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;p
 .logo{display:flex;align-items:center;gap:8px}
 .logo-t{color:#fff;font-size:17px;font-weight:600}
 .logo-s{color:rgba(255,255,255,.75);font-size:11px;margin-left:auto;text-align:right;line-height:1.4}
+.reload-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;margin-left:8px}
+.reload-btn:hover{background:rgba(255,255,255,.3)}
 .status{font-size:12px;padding:10px 14px;border-radius:7px;display:none;line-height:1.8;margin-bottom:1rem}
 .status.err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;display:block}
 .status.ok{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;display:block}
@@ -59,8 +61,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--sp)}
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
 .modal-box{background:#fff;border-radius:12px;padding:1.25rem;width:440px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
 .footer{margin-top:1rem;font-size:10px;color:#ccc;text-align:center}
-.reload-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;margin-left:8px}
-.reload-btn:hover{background:rgba(255,255,255,.3)}
 </style>
 </head>
 <body>
@@ -113,77 +113,81 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--sp)}
 // ╔══════════════════════════════════════════════════════════╗
 // ║  COLE A URL DO SEU APPS SCRIPT AQUI ↓                   ║
 // ╚══════════════════════════════════════════════════════════╝
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdMXE8PuKnN-gC7lyrOxYB2RxaAhu4m_HqaN3-YTvmEc0mylYNVXsRmxV-KmmmqyS0/exec';
+const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
 // Exemplo:
-// const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx.../exec';
+// const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFsjQ8R-6FVGHi8AuKTVxW7Mee5d-X4akS19M34s99DkP5JGPpuLPZG28lohJXGmNA/exec';
 
 // ═══════════════════════════════════════════════════════════
 const COLORS = ['#EE4D2D','#F5810A','#FFBA49','#3B6D11','#185FA5','#854F0B','#993356'];
 let USUARIO_MAP = {}, RAW = [], sortCol = 'data', sortAsc = true, donutChart = null;
 
-// ── Carrega ao abrir a página ──────────────────────────────
 window.addEventListener('DOMContentLoaded', loadData);
 
+// ── Carregar dados ─────────────────────────────────────────
 async function loadData() {
   if (!SCRIPT_URL || SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    setStatus('⚠️ Configure a URL do Apps Script no arquivo <strong>index.html</strong> (linha com <code>const SCRIPT_URL</code>).', 'err');
+    setStatus('⚠️ Edite o arquivo <strong>index.html</strong> e cole a URL do Apps Script na variável <code>SCRIPT_URL</code>.', 'err');
     return;
   }
   setStatus('⏳ Carregando dados...', 'loading');
   try {
     const resp = await fetch(SCRIPT_URL);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
+    const text = await resp.text();          // pega como texto primeiro
+    const json = JSON.parse(text);           // parseia manualmente (evita corrupção)
     if (json.status === 'error') throw new Error(json.message);
     if (!json.rows || !json.rows.length) throw new Error('Planilha sem dados.');
     processData(json.rows);
   } catch(e) {
-    const msg = (e.message.includes('Failed to fetch') || e.message.includes('NetworkError'))
-      ? 'Não foi possível conectar. Verifique se o script foi publicado como <strong>"Qualquer pessoa"</strong>.'
-      : e.message;
-    setStatus('❌ ' + msg, 'err');
+    const isFetch = e.message.includes('Failed to fetch') || e.message.includes('NetworkError');
+    setStatus(isFetch
+      ? '❌ Não foi possível conectar. Verifique se o script foi publicado como <strong>"Qualquer pessoa"</strong>.'
+      : '❌ ' + e.message, 'err');
   }
 }
 
+// ── Processar dados ────────────────────────────────────────
 function processData(rows) {
   USUARIO_MAP = {};
   const keys = Object.keys(rows[0]);
-
-  // Detecta coluna pelo nome — case insensitive, acento insensitive
-  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const find = (aliases) => keys.find(k => aliases.some(a => norm(k).includes(norm(a)))) || '';
+  // Normaliza string para comparação (sem acento, minúsculo)
+  const n = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const find = al => keys.find(k => al.some(a => n(k).includes(n(a)))) || '';
 
   const K = {
-    data:        find(['data/hora','data','date','hora']),
+    data:        find(['data/hora','data','date']),
     cad:         find(['cad']),
-    usuario:     find(['usuario','user','email']),       // coluna "Usuário"
+    usuario:     find(['usuario','user','email']),
     gestor:      find(['gestor','manager']),
     colaborador: find(['colaborador','funcionario']),
     tipo:        find(['tipo de feedback','tipo']),
     status:      find(['endereco tratado','status','situacao']),
-    nota:        find(['nota','grade','score']),
-    mensagem:    find(['mensagem','observacao','feedback','descricao']),
-    // Assinatura: testa variantes com e sem acento, com e sem parênteses
+    nota:        find(['nota','grade']),
+    mensagem:    find(['mensagem','observacao','descricao']),
     assinatura:  find(['assinatura (texto)','assinatura(texto)','assinatura texto','assinatura']),
   };
 
-  // Log de debug — remova depois de confirmar que está ok
-  console.log('Colunas detectadas:', K);
-  console.log('Todas as colunas:', keys);
+  console.log('🔍 Colunas detectadas:', K);
+  console.log('📋 Colunas da planilha:', keys);
 
   RAW = rows.map(r => {
     const usuario = (r[K.usuario] || '').trim();
     const gestor  = (r[K.gestor]  || '').trim();
     const key     = usuario || gestor;
 
-    // Monta mapa: chave única → nome mais curto/limpo
-    if (key && (!USUARIO_MAP[key] || gestor.length < (USUARIO_MAP[key]||'').length)) {
+    // Monta mapa email → nome canônico (mais curto)
+    if (key && (!USUARIO_MAP[key] || gestor.length < (USUARIO_MAP[key]||'').length))
       USUARIO_MAP[key] = gestor;
-    }
 
-    // Assinatura: garante que começa com data:image
-    let assin = (r[K.assinatura] || '').trim();
-    if (assin && !assin.startsWith('data:')) assin = 'data:image/jpeg;base64,' + assin;
+    // Assinatura: limpa e garante prefixo correto
+    let assin = (r[K.assinatura] || '').trim().replace(/[\r\n\t]/g, '');
+    if (assin) {
+      if (!assin.startsWith('data:')) {
+        // Já é base64 puro — adiciona prefixo
+        assin = 'data:image/jpeg;base64,' + assin;
+      }
+      // Se vier com prefixo duplicado (data:image...base64,/9j/...) mantém como está
+    }
 
     return {
       data:        (r[K.data] || '').substring(0, 16),
@@ -198,14 +202,20 @@ function processData(rows) {
     };
   }).filter(r => r.colaborador || r.usuario);
 
-  // Normaliza nome do gestor para todos os registros
+  // Normaliza nome do gestor
   RAW.forEach(r => { r.gestor = USUARIO_MAP[r.usuario] || r.usuario; });
+
+  // Debug: mostra quantos têm assinatura
+  const comAssin = RAW.filter(r => r.assinatura).length;
+  console.log(`✅ ${RAW.length} registros | 🖊️ ${comAssin} com assinatura`);
+  if (comAssin > 0) {
+    console.log('📸 Amostra assinatura[0]:', RAW.find(r=>r.assinatura)?.assinatura?.substring(0,80));
+  }
 
   buildFilters();
   document.getElementById('dash').style.display = 'block';
-  document.getElementById('hdrSub').innerHTML = `Controle de Feedbacks · CADPE`;
-  setStatus(`✅ ${RAW.length} feedbacks carregados!`, 'ok');
-  setTimeout(() => setStatus('', ''), 3000);
+  setStatus(`✅ ${RAW.length} feedbacks carregados! (${comAssin} com assinatura)`, 'ok');
+  setTimeout(() => setStatus('', ''), 4000);
   render();
 }
 
@@ -223,11 +233,11 @@ function filtered() {
     if (c  && r.colaborador !== c)  return false;
     if (t  && r.tipo        !== t)  return false;
     if (s  && r.status      !== s)  return false;
-    if (b  && ![r.colaborador, r.gestor, r.tipo, r.mensagem, r.cad].join(' ').toLowerCase().includes(b)) return false;
+    if (b  && ![r.colaborador,r.gestor,r.tipo,r.mensagem,r.cad].join(' ').toLowerCase().includes(b)) return false;
     return true;
   });
   rows.sort((a, b) => {
-    const va = a[sortCol]; const vb = b[sortCol];
+    const va = a[sortCol], vb = b[sortCol];
     if (sortCol === 'nota') return sortAsc ? va-vb : vb-va;
     return sortAsc ? String(va).localeCompare(String(vb),'pt-BR')
                    : String(vb).localeCompare(String(va),'pt-BR');
@@ -235,7 +245,6 @@ function filtered() {
   return rows;
 }
 
-// ── Métricas ───────────────────────────────────────────────
 function renderMetrics(rows) {
   const concl = rows.filter(r => r.status === 'Concluido').length;
   document.getElementById('metrics').innerHTML = `
@@ -245,7 +254,6 @@ function renderMetrics(rows) {
     <div class="metric"><label>Colaboradores</label><span class="v4">${new Set(rows.map(r=>r.colaborador)).size}</span></div>`;
 }
 
-// ── Gráficos ───────────────────────────────────────────────
 function renderCharts(rows) {
   const gm={};rows.forEach(r=>{gm[r.gestor]=(gm[r.gestor]||0)+1;});
   const gk=Object.keys(gm).sort((a,b)=>gm[b]-gm[a]);
@@ -277,7 +285,6 @@ function renderCharts(rows) {
     `<div class="legr"><div class="legd" style="background:${tco[i]}"></div><span>${esc(k)} (${tm[k]})</span></div>`).join('');
 }
 
-// ── Tabela ─────────────────────────────────────────────────
 function renderTable(rows) {
   document.getElementById('cnt').textContent=`${rows.length} de ${RAW.length}`;
   const tb=document.getElementById('tbody');
@@ -285,6 +292,7 @@ function renderTable(rows) {
   tb.innerHTML=rows.map(r=>{
     const idx=RAW.indexOf(r);
     const sc=r.status==='Concluido'?'color:#3B6D11':'color:#854F0B';
+    const temAssin = r.assinatura ? '🖊️' : '';
     return `<tr>
       <td title="${esc(r.data)}">${r.data.split(' ')[0]}</td>
       <td>${r.cad?`<span class="cad-badge">${esc(r.cad)}</span>`:''}</td>
@@ -293,7 +301,7 @@ function renderTable(rows) {
       <td><span class="badge ${tc(r.tipo)}">${esc(r.tipo)}</span></td>
       <td><div class="nb"><div class="nf"><div class="nfil" style="width:${r.nota*10}%"></div></div><span class="nn">${r.nota}</span></div></td>
       <td><span style="${sc};font-size:11px">${esc(r.status)}</span></td>
-      <td><button class="asb" onclick="verAssinatura(${idx})">Ver ↗</button></td>
+      <td><button class="asb" onclick="verAssinatura(${idx})" title="${temAssin ? 'Assinatura disponível' : 'Sem assinatura'}">${temAssin} Ver ↗</button></td>
     </tr>`;
   }).join('');
 }
@@ -302,7 +310,6 @@ function render(){const rows=filtered();renderMetrics(rows);renderCharts(rows);r
 function sortBy(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true;}render();}
 function limpar(){['fG','fCA','fC','fT','fS'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('busca').value='';render();}
 
-// ── Filtros ────────────────────────────────────────────────
 function buildFilters() {
   const USUARIOS = [...new Set(RAW.map(r=>r.usuario).filter(Boolean))].sort((a,b)=>(USUARIO_MAP[a]||a).localeCompare(USUARIO_MAP[b]||b,'pt-BR'));
   const COLABS   = [...new Set(RAW.map(r=>r.colaborador).filter(Boolean))].sort();
@@ -320,8 +327,8 @@ function buildFilters() {
 // ── Modal assinatura ───────────────────────────────────────
 function verAssinatura(idx) {
   const r = RAW[idx];
-  const old = document.getElementById('modal');if(old)old.remove();
-  const temAssin = r.assinatura && r.assinatura.startsWith('data:image');
+  const old = document.getElementById('modal'); if(old) old.remove();
+  const temAssin = r.assinatura && r.assinatura.length > 100;
   const m = document.createElement('div');
   m.id='modal'; m.className='modal-ov';
   m.innerHTML=`
@@ -335,17 +342,16 @@ function verAssinatura(idx) {
       </div>
       <div style="background:#FFF0ED;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #EE4D2D">
         <div style="font-size:12px;font-weight:500;color:#EE4D2D">${esc(r.colaborador)}</div>
-        <div style="font-size:11px;color:#666;margin-top:3px">Gestor: ${esc(r.gestor)} · ${esc(r.data)}${r.cad?` · <span class="cad-badge" style="font-size:10px">${esc(r.cad)}</span>`:''}</div>
+        <div style="font-size:11px;color:#666;margin-top:3px">Gestor: ${esc(r.gestor)} · ${esc(r.data)}${r.cad ? ` · <span class="cad-badge" style="font-size:10px">${esc(r.cad)}</span>` : ''}</div>
         <div style="display:flex;gap:8px;margin-top:5px;align-items:center;flex-wrap:wrap">
           <span class="badge ${tc(r.tipo)}" style="font-size:10px">${esc(r.tipo)}</span>
           <span style="font-size:11px;color:#185FA5;font-weight:500">Nota: ${r.nota}/10</span>
           <span style="font-size:11px;color:${r.status==='Concluido'?'#3B6D11':'#854F0B'}">${esc(r.status)}</span>
         </div>
       </div>
-      <div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:12px;background:#f9f9f9;min-height:80px;display:flex;align-items:center;justify-content:center">
+      <div id="assinContainer" style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:12px;background:#f9f9f9;min-height:80px;display:flex;align-items:center;justify-content:center">
         ${temAssin
-          ? `<img src="${r.assinatura}" style="max-width:100%;max-height:240px;display:block;object-fit:contain" alt="Assinatura"
-               onerror="this.parentElement.innerHTML='<p style=\\'padding:1rem;font-size:12px;color:#999;text-align:center\\'>Imagem inválida</p>'"/>`
+          ? `<img id="assinImg" style="max-width:100%;max-height:260px;display:block;object-fit:contain" alt="Assinatura de ${esc(r.colaborador)}"/>`
           : `<p style="padding:1.5rem;font-size:12px;color:#999;text-align:center">✍ Assinatura não disponível neste registro.</p>`}
       </div>
       <div style="font-size:11px;color:#555;border-top:1px solid #eee;padding-top:10px;line-height:1.7;max-height:110px;overflow:auto">
@@ -354,6 +360,18 @@ function verAssinatura(idx) {
     </div>`;
   document.body.appendChild(m);
   m.addEventListener('click', e => { if(e.target===m) m.remove(); });
+
+  // Carrega imagem após inserir no DOM (evita problemas com src muito grande)
+  if (temAssin) {
+    const img = document.getElementById('assinImg');
+    img.onload = () => console.log('✅ Assinatura carregada com sucesso');
+    img.onerror = () => {
+      console.error('❌ Erro ao carregar assinatura. Prefixo:', r.assinatura?.substring(0,50));
+      document.getElementById('assinContainer').innerHTML =
+        '<p style="padding:1rem;font-size:12px;color:#999;text-align:center">Erro ao carregar imagem.<br>Verifique o console (F12) para detalhes.</p>';
+    };
+    img.src = r.assinatura;
+  }
 }
 
 // ── Helpers ────────────────────────────────────────────────
