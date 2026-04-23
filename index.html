@@ -113,9 +113,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--sp)}
 // ╔══════════════════════════════════════════════════════════╗
 // ║  COLE A URL DO SEU APPS SCRIPT AQUI ↓                   ║
 // ╚══════════════════════════════════════════════════════════╝
-const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVzQll2lc5k42v3m7SFFwN1Z-F0yfHjQGgDccyzBIXxr2H8e_AUwVCXvI2F411Zrgs/exec';
 // Exemplo:
-// const SCRIPT_URL = 'https://script.google.com/macros/library/d/1dSswuYxfMhNboL-Z91Fe6HxyvxVB0WVQTkRpgCunI5plHX34NKuLpMEN/5';
+// const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx.../exec';
 
 // ═══════════════════════════════════════════════════════════
 const COLORS = ['#EE4D2D','#F5810A','#FFBA49','#3B6D11','#185FA5','#854F0B','#993356'];
@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', loadData);
 
 // ── Carregar dados ─────────────────────────────────────────
 async function loadData() {
-  if (!SCRIPT_URL || SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
+  if (!SCRIPT_URL || SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxVzQll2lc5k42v3m7SFFwN1Z-F0yfHjQGgDccyzBIXxr2H8e_AUwVCXvI2F411Zrgs/exec') {
     setStatus('⚠️ Edite o arquivo <strong>index.html</strong> e cole a URL do Apps Script na variável <code>SCRIPT_URL</code>.', 'err');
     return;
   }
