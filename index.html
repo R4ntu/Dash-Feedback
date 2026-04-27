@@ -2,868 +2,382 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABS Ofensores | Shopee Logistics</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard de Feedbacks · Shopee</title>
 <style>
-:root {
-  --orange:#EE4D2D; --orange2:#FF6E4E; --orange-dim:rgba(238,77,45,0.12);
-  --bg:#0F0F0F; --card:#1A1A1A; --card2:#222; --border:#2A2A2A;
-  --text:#F2F2F2; --muted:#888; --muted2:#555;
-  --red:#FF4B4B; --red-dim:rgba(255,75,75,0.12);
-  --green:#16A34A; --green-dim:rgba(22,163,74,0.12);
-  --amber:#F59E0B; --amber-dim:rgba(245,158,11,0.12);
-  --blue:#3B82F6; --blue-dim:rgba(59,130,246,0.12);
-  --purple:#8B5CF6; --purple-dim:rgba(139,92,246,0.12);
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
-.header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:12px;}
-.logo-icon{width:36px;height:36px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;letter-spacing:-1px;}
-.logo-text{font-size:18px;font-weight:600;color:var(--text);}
-.logo-sub{font-size:12px;color:var(--muted);font-weight:400;}
-.badge-live{background:var(--orange-dim);color:var(--orange);border:1px solid var(--orange);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:0.5px;}
-.wrap{padding:24px 28px;max-width:1400px;margin:0 auto;}
-.filters{display:flex;gap:12px;margin-bottom:24px;align-items:center;flex-wrap:wrap;}
-.filter-group{display:flex;align-items:center;gap:8px;}
-.filter-label{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
-select{background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;}
-select:hover{border-color:#444;}
-.btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;}
-.btn-reset:hover{border-color:#555;color:var(--text);}
-.filter-separator{width:1px;height:30px;background:var(--border);}
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;}
-.kpi::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px;}
-.kpi.orange::before{background:var(--orange);}
-.kpi.red::before{background:var(--red);}
-.kpi.amber::before{background:var(--amber);}
-.kpi.green::before{background:var(--green);}
-.kpi.purple::before{background:var(--purple);}
-.kpi-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;}
-.kpi-value{font-size:30px;font-weight:700;line-height:1;margin-bottom:4px;}
-.kpi.orange .kpi-value{color:var(--orange);}
-.kpi.red .kpi-value{color:var(--red);}
-.kpi.amber .kpi-value{color:var(--amber);}
-.kpi.green .kpi-value{color:var(--green);}
-.kpi.purple .kpi-value{color:var(--purple);}
-.kpi-sub{font-size:11px;color:var(--muted);}
-.charts-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px;margin-bottom:24px;}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
-.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.chart-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
-.chart-wrap{position:relative;width:100%;height:200px;}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.section-title{font-size:15px;font-weight:600;}
-.section-sub{font-size:12px;color:var(--muted);}
-.search-box{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;width:220px;}
-.search-box::placeholder{color:var(--muted2);}
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
-table{width:100%;border-collapse:collapse;}
-thead tr{background:#222;border-bottom:1px solid var(--border);}
-thead th{padding:11px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;cursor:pointer;white-space:nowrap;user-select:none;}
-thead th:hover{color:var(--text);}
-thead th.sort-asc::after{content:' ↑';color:var(--orange);}
-thead th.sort-desc::after{content:' ↓';color:var(--orange);}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(255,255,255,0.03);}
-tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
-.name-cell{font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.coord-cell{font-size:12px;color:var(--muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.week-badge{display:inline-block;background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;margin-right:3px;}
-.week-badge.w14{border-color:#EE4D2D44;color:#EE4D2D;}
-.week-badge.w15{border-color:#F59E0B44;color:#F59E0B;}
-.week-badge.w16{border-color:#3B82F644;color:#3B82F6;}
-.dias-bar{display:flex;align-items:center;gap:8px;}
-.dias-num{font-size:18px;font-weight:700;min-width:28px;text-align:right;}
-.bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;max-width:80px;}
-.bar-fill{height:100%;border-radius:3px;background:var(--orange);}
-.bar-fill.high{background:var(--red);}
-.status-pill{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:500;}
-.pill-abandon{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,75,75,0.25);}
-.pill-desligado{background:rgba(255,75,75,0.08);color:#FF7070;border:1px solid rgba(255,112,112,0.2);}
-.pill-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.25);}
-.pill-pending{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
-.pill-none{background:var(--card2);color:var(--muted);border:1px solid var(--border);}
-.entrevista-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
-.dot-ok{background:var(--green);}
-.dot-no{background:var(--red);}
-.cid-tag{background:var(--blue-dim);color:var(--blue);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:500;}
-.no-data{text-align:center;padding:48px;color:var(--muted);}
-.coord-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
-.coord-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
-.coord-dot{width:8px;height:8px;border-radius:50%;}
-.abandon-alert{background:linear-gradient(90deg,rgba(255,75,75,0.08),transparent);border:1px solid rgba(255,75,75,0.2);border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
-.alert-icon{font-size:18px;color:var(--red);}
-.alert-text{font-size:13px;color:var(--text);}
-.alert-text strong{color:var(--red);}
-.pagination{display:flex;align-items:center;gap:8px;justify-content:flex-end;padding:12px 14px;border-top:1px solid var(--border);}
-.page-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;}
-.page-btn:hover{border-color:#555;}
-.page-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;}
-.page-info{font-size:12px;color:var(--muted);}
-.sort-controls{display:flex;gap:8px;align-items:center;}
-.sort-btn{background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;}
-.sort-btn.active{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);}
-.btn-import{display:inline-flex;align-items:center;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:border-color 0.15s,color 0.15s;}
-.btn-import:hover{border-color:var(--orange);color:var(--orange);}
-.ms-wrap{position:relative;}
-.ms-btn{display:flex;align-items:center;gap:8px;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;transition:border-color 0.15s;}
-.ms-btn:hover,.ms-btn.open{border-color:var(--orange);}
-.ms-btn.has-selection{border-color:var(--orange);background:var(--orange-dim);color:var(--orange);}
-.ms-label{font-weight:500;}
-.ms-count{background:var(--orange);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;}
-.ms-arrow{color:var(--muted);transition:transform 0.15s;flex-shrink:0;}
-.ms-btn.open .ms-arrow,.ms-btn.has-selection.open .ms-arrow{transform:rotate(180deg);}
-.ms-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px;min-width:175px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
-.ms-dropdown.open{display:block;}
-.ms-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text);transition:background 0.1s;user-select:none;}
-.ms-item:hover{background:rgba(255,255,255,0.05);}
-.ms-item input[type=checkbox]{accent-color:var(--orange);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
-.recorr-grid{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;}
-.recorr-dot{display:flex;flex-direction:column;align-items:center;gap:2px;}
-.recorr-dot span{font-size:9px;color:var(--muted2);font-weight:500;line-height:1;}
-.recorr-pip{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;}
-.recorr-pip.hit{background:var(--orange);border-color:var(--orange);color:#fff;}
-.recorr-pip.miss{background:transparent;border-color:var(--muted2);color:var(--muted2);}
-.recorr-badge{font-size:10px;font-weight:600;border-radius:4px;padding:2px 6px;margin-left:4px;white-space:nowrap;}
-.recorr-badge.alto{background:rgba(255,75,75,0.15);color:var(--red);border:1px solid rgba(255,75,75,0.3);}
-.recorr-badge.medio{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.3);}
-.recorr-badge.baixo{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.3);}
-@media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr);}.charts-row{grid-template-columns:1fr;}}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--s:#EE4D2D;--sl:#FFF0ED;--sp:#FEF6F4}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:.75rem;background:#f0f0f0;min-height:100vh}
+.app{max-width:1100px;margin:0 auto;background:#fff;border-radius:12px;padding:1rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.hdr{background:var(--s);border-radius:10px;padding:13px 18px;display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-t{color:#fff;font-size:17px;font-weight:600}
+.logo-s{color:rgba(255,255,255,.75);font-size:11px;margin-left:auto;text-align:right;line-height:1.4}
+.reload-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;margin-left:8px}
+.reload-btn:hover{background:rgba(255,255,255,.3)}
+.status{font-size:12px;padding:10px 14px;border-radius:7px;display:none;line-height:1.8;margin-bottom:1rem}
+.status.err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;display:block}
+.status.ok{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;display:block}
+.status.loading{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;display:block}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1rem}
+.metric{background:#fff;border:0.5px solid #e0e0e0;border-radius:8px;padding:10px 13px;border-left:3px solid var(--s)}
+.metric label{font-size:10px;color:#666;display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.metric span{font-size:20px;font-weight:500;color:var(--s)}.metric span.v3{color:#3B6D11}.metric span.v4{color:#185FA5}
+.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+@media(max-width:680px){.charts{grid-template-columns:1fr}}
+.ccard{background:#fff;border:0.5px solid #e0e0e0;border-radius:10px;padding:11px}
+.ctitle{font-size:10px;font-weight:500;color:#666;text-transform:uppercase;letter-spacing:.04em;margin-bottom:9px}
+.bar-chart{display:flex;flex-direction:column;gap:5px}
+.br{display:flex;align-items:center;gap:5px;font-size:11px}
+.bl{width:72px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bt{flex:1;background:#f0f0f0;border-radius:3px;height:11px;overflow:hidden}
+.bf{height:100%;border-radius:3px;transition:width .4s}.bv{width:20px;text-align:right;color:#1a1a1a;font-weight:500;flex-shrink:0}
+.donut-w{display:flex;flex-direction:column;align-items:center;gap:7px}
+.dleg{display:flex;flex-direction:column;gap:3px;width:100%}
+.legr{display:flex;align-items:center;gap:4px;font-size:10px;color:#666}
+.legd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.filt{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:7px;margin-bottom:7px}
+.filt select{width:100%;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid #ddd;background:#fff}
+.row2{display:flex;gap:7px;align-items:center;margin-bottom:.9rem;flex-wrap:wrap}
+.row2 input{flex:1;min-width:160px;font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid #ddd}
+.btn-r{font-size:12px;padding:5px 11px;border-radius:6px;border:1px solid var(--s);background:transparent;color:var(--s);cursor:pointer;font-weight:500}
+.btn-r:hover{background:var(--sl)}.cnt{font-size:11px;color:#666;margin-left:auto;white-space:nowrap}
+.tw{border:0.5px solid #e0e0e0;border-radius:10px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;min-width:580px}
+th{background:var(--sp);color:var(--s);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:9px;text-align:left;border-bottom:1px solid #FCCABC;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+th:hover{background:#FDDDD5}
+td{padding:8px 9px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--sp)}
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:999px;font-weight:500;white-space:nowrap}
+.t-pne{background:#FFF0D4;color:#8B5E00}.t-pe{background:#FFE8E4;color:#BF2D0F}
+.t-qp{background:#E0F0FF;color:#0050A0}.t-sobra{background:#E6F5E0;color:#2E6B18}
+.t-falta{background:#F5E8F8;color:#6B2080}.t-out{background:#F1EFE8;color:#5F5E5A}
+.cad-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500;background:#EEEDFE;color:#3C3489}
+.nb{display:flex;align-items:center;gap:4px}
+.nf{flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.nfil{height:100%;background:var(--s);border-radius:3px}.nn{font-size:11px;font-weight:500;color:var(--s)}
+.asb{color:var(--s);font-size:11px;display:inline-flex;align-items:center;gap:2px;border:1px solid #FCCABC;border-radius:6px;padding:3px 7px;cursor:pointer;background:transparent;font-weight:500}
+.asb:hover{background:var(--sl)}.empty{text-align:center;padding:3rem;color:#999;font-size:13px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
+.modal-box{background:#fff;border-radius:12px;padding:1.25rem;width:440px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.footer{margin-top:1rem;font-size:10px;color:#ccc;text-align:center}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">SH</div>
-    <div>
-      <div class="logo-text">ABS Ofensores</div>
-      <div class="logo-sub">Shopee Logistics · Controle de Ausências 2026</div>
+<div class="app">
+  <div class="hdr">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="white"/><text x="50" y="68" text-anchor="middle" font-size="58" font-weight="bold" fill="#EE4D2D" font-family="Arial,sans-serif">S</text></svg>
+      <span class="logo-t">Shopee</span>
     </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span class="badge-live" id="badge-semanas">SEMANAS 14–17</span>
-    <label class="btn-import" title="Importar novo CSV">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px;"><path d="M8 1v9M4 6l4 4 4-4M2 12h12v2H2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Importar CSV
-      <input type="file" id="csv-input" accept=".csv" style="display:none;" onchange="loadCSV(this)">
-    </label>
-    <div id="import-status" style="font-size:11px;color:var(--green);display:none;"></div>
-    <div id="storage-indicator" style="display:none;align-items:center;gap:8px;background:#1A2A1A;border:1px solid rgba(22,163,74,0.25);border-radius:8px;padding:6px 12px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;"></span>
-      <span id="storage-text" style="font-size:11px;color:#4ADE80;"></span>
-      <button onclick="clearStorage()" title="Limpar dados salvos" style="background:none;border:none;color:#555;cursor:pointer;font-size:13px;padding:0 0 0 6px;line-height:1;">✕</button>
-    </div>
-  </div>
-</div>
-<style>@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}</style>
-
-<div class="wrap">
-
-  <div class="filters">
-    <div class="ms-wrap" id="ms-semana">
-      <button class="ms-btn" onclick="toggleDropdown('semana')">
-        <span class="ms-label">Semana</span>
-        <span class="ms-count" id="ms-count-semana" style="display:none"></span>
-        <svg class="ms-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <div class="ms-dropdown" id="ms-dd-semana">
-        <label class="ms-item"><input type="checkbox" value="14" onchange="onFilterChange()"><span>Semana 14</span></label>
-        <label class="ms-item"><input type="checkbox" value="15" onchange="onFilterChange()"><span>Semana 15</span></label>
-        <label class="ms-item"><input type="checkbox" value="16" onchange="onFilterChange()"><span>Semana 16</span></label>
-        <label class="ms-item"><input type="checkbox" value="17" onchange="onFilterChange()"><span>Semana 17</span></label>
-      </div>
-    </div>
-
-    <div class="ms-wrap" id="ms-coord">
-      <button class="ms-btn" onclick="toggleDropdown('coord')">
-        <span class="ms-label">Coordenador</span>
-        <span class="ms-count" id="ms-count-coord" style="display:none"></span>
-        <svg class="ms-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <div class="ms-dropdown" id="ms-dd-coord">
-        <label class="ms-item"><input type="checkbox" value="ALISSON" onchange="onFilterChange()"><span>Alisson</span></label>
-        <label class="ms-item"><input type="checkbox" value="KARLA" onchange="onFilterChange()"><span>Karla</span></label>
-        <label class="ms-item"><input type="checkbox" value="INVENTÁRIO" onchange="onFilterChange()"><span>Inventário</span></label>
-        <label class="ms-item"><input type="checkbox" value="STERFFERSON" onchange="onFilterChange()"><span>Sterfferson</span></label>
-        <label class="ms-item"><input type="checkbox" value="RICARDO" onchange="onFilterChange()"><span>Ricardo</span></label>
-      </div>
-    </div>
-
-    <div class="ms-wrap" id="ms-status">
-      <button class="ms-btn" onclick="toggleDropdown('status')">
-        <span class="ms-label">Status</span>
-        <span class="ms-count" id="ms-count-status" style="display:none"></span>
-        <svg class="ms-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <div class="ms-dropdown" id="ms-dd-status">
-        <label class="ms-item"><input type="checkbox" value="abandon" onchange="onFilterChange()"><span>Abandono</span></label>
-        <label class="ms-item"><input type="checkbox" value="desligado" onchange="onFilterChange()"><span>Desligado</span></label>
-        <label class="ms-item"><input type="checkbox" value="sem_entrevista" onchange="onFilterChange()"><span>Sem Entrevista</span></label>
-      </div>
-    </div>
-
-    <div class="ms-wrap" id="ms-obs">
-      <button class="ms-btn" onclick="toggleDropdown('obs')">
-        <span class="ms-label">OBS</span>
-        <span class="ms-count" id="ms-count-obs" style="display:none"></span>
-        <svg class="ms-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-      </button>
-      <div class="ms-dropdown" id="ms-dd-obs">
-        <label class="ms-item"><input type="checkbox" value="Ajuste" onchange="onFilterChange()"><span>Ajuste</span></label>
-        <label class="ms-item"><input type="checkbox" value="Desligado" onchange="onFilterChange()"><span>Desligado</span></label>
-        <label class="ms-item"><input type="checkbox" value="Folga" onchange="onFilterChange()"><span>Folga</span></label>
-        <label class="ms-item"><input type="checkbox" value="sem_obs" onchange="onFilterChange()"><span>Sem OBS</span></label>
-      </div>
-    </div>
-
-    <button class="btn-reset" onclick="resetFilters()">Limpar filtros</button>
+    <div class="logo-s" id="hdrSub">Controle de Feedbacks<br>CADPE</div>
+    <button class="reload-btn" onclick="loadData()">🔄 Atualizar</button>
   </div>
 
-  <div id="alert-box" class="abandon-alert" style="display:none;">
-    <span class="alert-icon">⚠</span>
-    <div class="alert-text"><strong id="alert-count">0</strong> colaborador(es) em processo de abandono de emprego identificados no período filtrado.</div>
-  </div>
+  <div class="status" id="statusBar"></div>
 
-  <div class="kpis">
-    <div class="kpi orange">
-      <div class="kpi-label">Total Ocorrências</div>
-      <div class="kpi-value" id="kpi-total">—</div>
-      <div class="kpi-sub" id="kpi-total-sub">registros no período</div>
+  <div id="dash" style="display:none">
+    <div class="metrics" id="metrics"></div>
+    <div class="charts">
+      <div class="ccard"><div class="ctitle">Feedbacks por Gestor</div><div class="bar-chart" id="cg"></div></div>
+      <div class="ccard"><div class="ctitle">Tipos de Feedback</div><div class="donut-w"><canvas id="dc" width="110" height="110"></canvas><div class="dleg" id="dl"></div></div></div>
+      <div class="ccard"><div class="ctitle">Nota Média por Gestor</div><div class="bar-chart" id="cn"></div></div>
     </div>
-    <div class="kpi red">
-      <div class="kpi-label">Total Dias ABS</div>
-      <div class="kpi-value" id="kpi-dias">—</div>
-      <div class="kpi-sub" id="kpi-dias-sub">dias perdidos</div>
+    <div class="filt" id="fa"></div>
+    <div class="row2">
+      <input type="text" id="busca" placeholder="Buscar colaborador, gestor, tipo, mensagem..." oninput="render()"/>
+      <button class="btn-r" onclick="limpar()">Limpar filtros</button>
+      <span class="cnt" id="cnt"></span>
     </div>
-    <div class="kpi amber">
-      <div class="kpi-label">Colaboradores</div>
-      <div class="kpi-value" id="kpi-colab">—</div>
-      <div class="kpi-sub">colaboradores únicos</div>
-    </div>
-    <div class="kpi purple">
-      <div class="kpi-label">Sem Entrevista</div>
-      <div class="kpi-value" id="kpi-entrevista">—</div>
-      <div class="kpi-sub">pendentes de entrevista</div>
-    </div>
-    <div class="kpi green">
-      <div class="kpi-label">Abandono</div>
-      <div class="kpi-value" id="kpi-abandon">—</div>
-      <div class="kpi-sub">em processo</div>
-    </div>
-  </div>
-
-  <div class="charts-row">
-    <div class="chart-card">
-      <div class="chart-title">Ocorrências por Semana</div>
-      <div class="chart-sub">Total de registros e dias por semana</div>
-      <div class="chart-wrap">
-        <canvas id="chartSemana" role="img" aria-label="Gráfico de barras: ocorrências e dias por semana"></canvas>
-      </div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Por Coordenador</div>
-      <div class="chart-sub">Distribuição de ocorrências</div>
-      <div class="chart-wrap" style="height:200px;">
-        <canvas id="chartCoord" role="img" aria-label="Gráfico de rosca por coordenador"></canvas>
-      </div>
-      <div class="coord-legend" id="coord-legend"></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Top CIDs / Motivos</div>
-      <div class="chart-sub">Causas mais frequentes</div>
-      <div class="chart-wrap">
-        <canvas id="chartCid" role="img" aria-label="Gráfico de barras horizontais dos principais CIDs"></canvas>
-      </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th style="width:84px"  onclick="sortBy('data')">Data ↕</th>
+          <th style="width:70px"  onclick="sortBy('cad')">CAD ↕</th>
+          <th style="width:100px" onclick="sortBy('gestor')">Gestor ↕</th>
+          <th                     onclick="sortBy('colaborador')">Colaborador ↕</th>
+          <th style="width:108px" onclick="sortBy('tipo')">Tipo ↕</th>
+          <th style="width:62px"  onclick="sortBy('nota')">Nota ↕</th>
+          <th style="width:72px">Status</th>
+          <th style="width:84px">Assinatura</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
   </div>
-
-  <div class="section-header">
-    <div>
-      <div class="section-title">Ranking de Ofensores</div>
-      <div class="section-sub">Colaboradores com maiores índices de ausência</div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <input class="search-box" id="search-input" placeholder="Buscar colaborador..." oninput="render()">
-      <div class="sort-controls">
-        <button class="sort-btn" id="sb-dias" onclick="setSortBy('dias')">↓ Por dias</button>
-        <button class="sort-btn" id="sb-ocorr" onclick="setSortBy('ocorr')">↓ Por ocorr.</button>
-        <button class="sort-btn" id="sb-nome" onclick="setSortBy('nome')">A-Z Nome</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th style="width:32px;">#</th>
-          <th>Colaborador</th>
-          <th>Coordenador</th>
-          <th>Semanas</th>
-          <th>Ocorr.</th>
-          <th>Total Dias</th>
-          <th>Recorrência</th>
-          <th>Entrevista</th>
-          <th>Status</th>
-          <th>Principal CID</th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
-    </table>
-    <div class="pagination" id="pagination"></div>
-  </div>
-
+  <div class="footer">Dashboard de Feedbacks · Shopee CADPE · via Google Apps Script</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const RAW=[
-["FLAUDINE DOS SANTOS CASADO","15/01/2026",1,"02/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",14],
-["JEFFERSON GONCALVES DE BARROS SANTOS","02/06/2025",3,"01/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","H10","Conjuntivite","",14],
-["MARCIO ALVES DE SOUZA RUFINO","16/09/2025",1,"01/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",14],
-["BETANIA MARIA DA SILVA","16/09/2025",1,"04/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",14],
-["GEOVÂNIA ALESSANDRA SILVA COSTA","16/09/2025",1,"01/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",14],
-["VIVIANE BERNARDINO MATOS DE LIMA ARAUJO","11/11/2025",6,"01/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","CID-10","","",14],
-["ADRIANA MARIA DOS SANTOS","14/10/2025",3,"01/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","","",14],
-["JONH LUCAS PEREIRA DE OLIVEIRA","16/09/2025",7,"30/03/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","","",14],
-["MARIANA GOMES DO NASCIMENTO","14/10/2025",1,"31/03/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","","",14],
-["MARIANA GOMES DO NASCIMENTO","14/10/2025",3,"02/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","","",14],
-["LEANDRO DA SILVA SANTOS","11/11/2025",1,"02/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","","SPX","K409","Hérnia inguinal","",14],
-["LEANDRO DA SILVA SANTOS","11/11/2025",4,"03/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","","SPX","CID10","","",14],
-["LEANDRO DA SILVA SANTOS","11/11/2025",1,"03/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","","SPX","CID10","","",14],
-["WELTON GUSTAVO DA SILVA","16/09/2025",1,"04/04/2026","GUIOBERTO ARRUDA DE OLIVEIRA FILHO","KARLA CERAVOLO","","SPX","","","",14],
-["BARBARA LAIS MARQUES FERREIRA","10/02/2026",3,"30/03/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","T784","Alergia não especificada","",14],
-["BARBARA LAIS MARQUES FERREIRA","10/02/2026",1,"02/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","A09","Diarreia e gastroenterite","",14],
-["BARBARA LAIS MARQUES FERREIRA","10/02/2026",1,"04/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","","",14],
-["ROSINEIDE ALVES FERREIRA","09/12/2025",1,"04/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","M545","Dor lombar baixa","",14],
-["GILVANIA MARIA DE MENEZES","16/09/2025",1,"31/03/2026","JERFFREY GONCALVES DE BARROS SANTOS","KARLA CERAVOLO","","SPX","G43","Enxaqueca","",14],
-["MARCOS FILIPE BRAZ DO MONTE","09/12/2025",2,"04/04/2026","JERFFREY GONCALVES DE BARROS SANTOS","KARLA CERAVOLO","","SPX","","","",14],
-["CAROLINNE RANYERY SOARES DOS SANTOS","11/11/2025",4,"03/04/2026","PEDRO AURELIO DE SOUZA BARBOSA","INVENTÁRIO","","SPX","60.0","Pneumoconiose","",14],
-["JANAINA LETICIA LIRA DE MENDONCA","11/11/2025",7,"30/03/2026","ROGERIO CUNHA DA SILVA","KARLA CERAVOLO","","SPX","","","",14],
-["GILSON VIEIRA DA SILVA","15/01/2026",1,"31/03/2026","ADONAI MAGALHÃES","INVENTÁRIO","","SPX","","","",14],
-["DAVYD WALLACE MENDES DOS SANTOS","16/09/2025",1,"04/04/2026","SIDCLEY ALEXANDRE DOS SANTOS","KARLA CERAVOLO","","SPX","","","",14],
-["WILKA FAUSTINO DA SILVA","11/11/2025",6,"30/03/2026","SILVIO AURELIO NASCIMENTO DE ARAUJO","ALISSON GUTEMBERG DOS SANTOS","","SPX","M766/M544/M543","Tendinite do calcâneo","",14],
-["ELIANDRO FELIPE DA SILVA","12/02/2026",1,"31/03/2026","BRUNO CELESTINO DE CASTRO SILVA","KARLA CERAVOLO","","BPO","","","",14],
-["CLEONIO ALVES DOS SANTOS JUNIOR","15/01/2026",2,"29/03/2026","VALDECIO FELIX DE LIMA","INVENTÁRIO","","SPX","","","",14],
-["CLEONIO ALVES DOS SANTOS JUNIOR","15/01/2026",1,"01/04/2026","VALDECIO FELIX DE LIMA","INVENTÁRIO","","SPX","","","",14],
-["LUCIO LUAN ANTONIO GOMES","16/09/2025",1,"01/04/2026","VALDECIO FELIX DE LIMA","INVENTÁRIO","","SPX","","","",14],
-["THIAGO DA SILVA BRAGA","14/10/2025",3,"30/03/2026","VALDECIO FELIX DE LIMA","INVENTÁRIO","","SPX","A09","Diarreia e gastroenterite","",14],
-["ALINE ANDRECIA DE FRANCA COSTA","09/12/2025",2,"06/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","SIM","SPX","","","",15],
-["EDSON ROBERIO MONTENEGRO","10/02/2026",3,"11/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","M255","Dor articular","Desligado",15],
-["FLAUDINE DOS SANTOS CASADO","15/01/2026",2,"09/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","SEM MARCAÇÃO","","Folga",15],
-["RODRIGO MARCELO ESTEVAO DA SILVA","15/01/2026",1,"05/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","Folga",15],
-["RODRIGO MARCELO ESTEVAO DA SILVA","15/01/2026",2,"05/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","SIM","SPX","A09","Diarreia e gastroenterite","",15],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",1,"10/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO","","SPX","","","",15],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",5,"11/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO","","SPX","","","",15],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",1,"09/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO","","SPX","SEM MARCAÇÃO","","",15],
-["ANGELICA AMARA DE OLIVEIRA","09/12/2025",2,"05/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","A09","Diarreia e gastroenterite","Desligado",15],
-["ANGELICA AMARA DE OLIVEIRA","09/12/2025",2,"05/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","A09","Diarreia e gastroenterite","Ajuste",15],
-["LENILSON HENRIQUE DA SILVA","16/09/2025",1,"11/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","SEM MARCAÇÃO","","Ajuste",15],
-["MARCIO ALVES DE SOUZA RUFINO","16/09/2025",2,"09/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","SEM MARCAÇÃO","","",15],
-["THALYSON DAVI GOMES BRAGA","20/08/2024",1,"05/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",15],
-["VIVIANE BERNARDINO MATOS DE LIMA ARAUJO","11/11/2025",5,"06/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","","SPX","10542","","Desligado",15],
-["ADRIANA MARIA DOS SANTOS","14/10/2025",2,"09/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","","",15],
-["JONH LUCAS PEREIRA DE OLIVEIRA","16/09/2025",7,"06/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","FALTAS CONSECUTIVAS ( EM PROCESSO DE ABANDONO)","Abandono","",15],
-["LEANDRO DA SILVA SANTOS","11/11/2025",3,"09/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","","SPX","M77.3+M54.5","Esporão + dor lombar","",15],
-["LEONARDO ALVES DE ATAIDE","04/08/2025",1,"11/04/2026","GUILHERME SILVA CRUZ","STERFFERSON NELIO FELIPE CABRAL","","SPX","SEM MARCAÇÃO","","Folga",15],
-["ALINE DA SILVA PESSOA ANDRADE","12/08/2025",2,"10/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","A92","Febre viral","",15],
-["EDSON ROBERIO MONTENEGRO","10/02/2026",1,"05/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","Desligado",15],
-["CHARLISON ROBERTO CALHEIROS DA SILVA","12/08/2025",5,"08/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","","SPX","B349","Infecção viral não especificada","",15],
-["JESSICA RAIANE ALVES DA SILVA","14/10/2025",1,"05/04/2026","PEDRO AURELIO DE SOUZA BARBOSA","INVENTÁRIO","","SPX","","","Folga",15],
-["JANAINA LETICIA LIRA DE MENDONCA","11/11/2025",7,"06/04/2026","ROGERIO CUNHA DA SILVA","KARLA CERAVOLO","","SPX","FALTAS CONSECUTIVAS ( EM PROCESSO DE ABANDONO)","Abandono","Desligado",15],
-["LUANA CARLA DE BRITO SILVA","14/10/2025",1,"09/04/2026","ROGERIO CUNHA DA SILVA","KARLA CERAVOLO","","SPX","SEM MARCAÇÃO","","",15],
-["JANAINA DA COSTA ALVES","09/12/2025",1,"05/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO","","SPX","","","",15],
-["EDIPO DOMINGOS DA SILVA","14/10/2025",1,"05/04/2026","SILVIO AURELIO NASCIMENTO DE ARAUJO","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação no ponto","",15],
-["EDIPO DOMINGOS DA SILVA","14/10/2025",2,"11/04/2026","SILVIO AURELIO NASCIMENTO DE ARAUJO","ALISSON GUTEMBERG DOS SANTOS","","SPX","A09","Diarreia e gastroenterite","",15],
-["WILKA FAUSTINO DA SILVA","11/11/2025",2,"08/04/2026","SILVIO AURELIO NASCIMENTO DE ARAUJO","ALISSON GUTEMBERG DOS SANTOS","","SPX","M545","Dor lombar","Desligado",15],
-["WILMA AVILA DE MENDONCA","10/02/2026",1,"08/04/2026","WANDERSON ALVES DE ALMEIDA","KARLA CERAVOLO","","SPX","M79.6+M545","Dor nos membros + dor lombar","",15],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",4,"11/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO","SIM","SPX","","Atestado Médico","",15],
-["ADRIANA MARIA DOS SANTOS","14/10/2025",3,"13/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO","","SPX","","Atestado Médico","",16],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",4,"17/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO","SIM","SPX","","Atestado Médico","",16],
-["WILMA AVILA DE MENDONCA","10/02/2026",1,"16/04/2026","GUILHERME SILVA CRUZ","KARLA CERAVOLO","SIM","SPX","","Atestado Médico","",16],
-["JESSYCA CRISTINE MELO DA SILVA","11/11/2025",1,"12/04/2026","JONATHAN OLIVEIRA DE MENDONCA","KARLA CERAVOLO","","SPX","R51","Cefaleia","",16],
-["LEANDRO DA SILVA SANTOS","11/11/2025",3,"17/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","SIM","SPX","H10","Conjuntivite","",16],
-["LEANDRO DA SILVA SANTOS","11/11/2025",2,"14/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","SIM","SPX","A09","Diarreia e gastroenterite","",16],
-["MAYARA BARBOSA DE LIMA","10/02/2026",1,"17/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","","SPX","A09","Diarreia/gastroenterite","",16],
-["MAYARA BARBOSA DE LIMA","10/02/2026",2,"18/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","","SPX","A09","Diarreia/gastroenterite","",16],
-["ALMIR PEREIRA DE FIGUEIREDO","10/02/2026",1,"15/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","SIM","SPX","M545","Dor lombar baixa","",16],
-["CAUE FELIPE DE ALBUQUERQUE MELO","07/07/2025",2,"16/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO","","SPX","B34","Infecção viral","",16],
-["CHARLISON ROBERTO CALHEIROS DA SILVA","12/08/2025",4,"14/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","","SPX","B349","Infecção viral não especificada","",16],
-["MICHELE MARIA DA SILVA","16/09/2025",1,"16/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","J11","Influenza (gripe)","",16],
-["JESSICA RAIANE ALVES DA SILVA","14/10/2025",2,"16/04/2026","PEDRO AURELIO DE SOUZA BARBOSA","INVENTÁRIO","","SPX","M75","Lesões do ombro","",16],
-["SILVIO AURELIO NASCIMENTO DE ARAUJO","02/06/2025",1,"14/04/2026","IRACEMA BATISTA DO NASCIMENTO BEZERRA","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação","Ajuste",16],
-["ELIANE MARIA DA SILVA","14/10/2025",1,"16/04/2026","JONATHAN OLIVEIRA DE MENDONCA","KARLA CERAVOLO","","SPX","","Sem marcação","Ajuste",16],
-["JOAO VICTOR CORREIA DA SILVA","16/09/2025",1,"14/04/2026","RUAN DE SOUZA ANTUNES","INVENTÁRIO","","SPX","","Sem marcação","Ajuste",16],
-["ROGERIO CUNHA DA SILVA","14/07/2025",1,"18/04/2026","GUIOBERTO ARRUDA DE OLIVEIRA FILHO","KARLA CERAVOLO","","SPX","","Sem marcação","Ajuste",16],
-["CHARLISON ROBERTO CALHEIROS DA SILVA","12/08/2025",1,"19/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","","SPX","","Sem marcação","Ajuste",16],
-["ITALO GUSTAVO TAVARES","16/09/2025",1,"19/04/2026","JONATHAN OLIVEIRA DE MENDONCA","KARLA CERAVOLO","","SPX","","Atestado Médico","",16],
-["LOIDE PAULA SILVA DOS SANTOS","11/11/2025",1,"19/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação","Ajuste",16],
-["LUCIO LUAN ANTONIO GOMES","16/09/2025",1,"19/04/2026","VALDECIO FELIX DE LIMA","INVENTÁRIO","","SPX","","Sem marcação","Ajuste",16],
-["MARY JANE CAETANO DA SILVA","10/02/2026",1,"19/04/2026","GUILHERME SILVA CRUZ","STERFFERSON NELIO FELIPE CABRAL","","SPX","","Sem marcação","Ajuste",16],
-["JAMERSON ANDRADE DA SILVA","16/09/2025",3,"14/04/2026","PEDRO AURELIO DE SOUZA BARBOSA","INVENTÁRIO","","SPX","","Sem marcação","Ajuste",16],
-["MARCIO ALVES DE SOUZA RUFINO","16/09/2025",1,"17/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","","SPX","","Sem marcação","Ajuste",16],
-["SANDRA DE LIMA GOMES","16/09/2025",1,"12/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO","","SPX","SEM MARCAÇÃO","Sem marcação","Ajuste",16],
-["AMANDA BEATRIZ NERY DA SILVA","10/02/2026",1,"20/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["ANA CLARA NUNES DE LIMA PEREIRA","09/12/2025",1,"22/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","NÃO","SPX","SEM CID","","",17],
-["ANA DILZA DE JESUS GOMES","09/12/2025",2,"25/04/2026","AGNALDO MIGUEL DE JESUS","ALISSON GUTEMBERG DOS SANTOS","NÃO","SPX","J039","Amigdalite aguda não especificada","",17],
-["ARIANE WALESKA DE OLIVEIRA LIMA","09/12/2025",1,"23/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO (T3)","NÃO","SPX","K30","Dispepsia","",17],
-["ARICLES JOSE DA SILVA","07/04/2026",1,"26/04/2026","BRUNO CELESTINO DE CASTRO SILVA","KARLA CERAVOLO (T3)","NÃO","BPO","R11","Náusea e vômito","",17],
-["ARTHUR RICARDO DA SILVA","15/01/2026",1,"24/04/2026","JERFFREY GONCALVES DE BARROS SANTOS","KARLA CERAVOLO (T3)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["CAUE FELIPE DE ALBUQUERQUE MELO","07/07/2025",1,"22/04/2026","EVEANNE AMABIA SANTOS DE LIMA","KARLA CERAVOLO (T1)","SIM","SPX","R51","Cefaleia (dor de cabeça)","",17],
-["CRISTIENE CIBELE DA SILVA COSTA","16/09/2025",1,"24/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO (T1)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["DAIANA JANUARIA DA SILVA","09/12/2025",3,"25/04/2026","JONATHAN OLIVEIRA DE MENDONCA","KARLA CERAVOLO (T1)","NÃO","SPX","SEM CID","","",17],
-["ELIANDRO FELIPE DA SILVA","12/02/2026",2,"25/04/2026","BRUNO CELESTINO DE CASTRO SILVA","KARLA CERAVOLO (T3)","NÃO","BPO","J00","Nasofaringite aguda (resfriado)","",17],
-["ELLEN RAYANE AMORIM DA SILVA","14/10/2025",1,"23/04/2026","CAUE FELIPE DE ALBUQUERQUE MELO","KARLA CERAVOLO (T1)","NÃO","SPX","SEM CID","","",17],
-["GILVANIA MARIA DE MENEZES","16/09/2025",1,"25/04/2026","JERFFREY GONCALVES DE BARROS SANTOS","KARLA CERAVOLO (T3)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["GRAZIELE SOLANGE DOS SANTOS","11/11/2025",1,"22/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO (T1)","NÃO","SPX","R42","Tontura e instabilidade","",17],
-["GRAZIELE SOLANGE DOS SANTOS","11/11/2025",2,"25/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO (T1)","NÃO","SPX","R51","Cefaleia (dor de cabeça)","",17],
-["JAMERSON ANDRADE DA SILVA","16/09/2025",2,"24/04/2026","PEDRO AURELIO DE SOUZA BARBOSA","RICARDO RODRIGUES VIEIRA DE ABREU","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["JANAINA DA COSTA ALVES","09/12/2025",1,"25/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO (T1)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["JERFFREY GONCALVES DE BARROS SANTOS","02/06/2025",1,"22/04/2026","BRUNO CELESTINO DE CASTRO SILVA","KARLA CERAVOLO (T3)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["JESSICA CRISTINA DA SILVA","07/04/2026",1,"26/04/2026","BRUNO CELESTINO DE CASTRO SILVA","KARLA CERAVOLO (T3)","NÃO","BPO","M796","Dor em membro","",17],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",1,"17/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO (T3)","NÃO","SPX","SEM CID","","",17],
-["LUCIANO GOMES DE OLIVEIRA","11/11/2025",3,"24/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO (T3)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["LUCIO LUAN ANTONIO GOMES","16/09/2025",1,"23/04/2026","VALDECIO FELIX DE LIMA","RICARDO RODRIGUES VIEIRA DE ABREU","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["MARIA EDUARDA DA SILVA","14/10/2025",2,"25/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","NÃO","SPX","M545","Dor lombar baixa","",17],
-["QUEZIA LAIS VIEIRA GOMES","16/09/2025",1,"25/04/2026","ANDERSON JOSE DA SILVA FREITAS","KARLA CERAVOLO (T3)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["ROGERIO SILVESTRE DA CONCEICAO JUNIOR","02/06/2025",2,"23/04/2026","ELIAS COSTA DOS SANTOS JUNIOR","KARLA CERAVOLO (T1)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","",17],
-["SANDRA DE LIMA GOMES","16/09/2025",1,"26/04/2026","ROGERIO SILVESTRE DA CONCEICAO JUNIOR","KARLA CERAVOLO (T1)","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["TALIS GABRIEL OLIVEIRA DA SILVA","10/02/2026",2,"25/04/2026","BRUNO CELESTINO DE CASTRO SILVA","ALISSON GUTEMBERG DOS SANTOS","NÃO","SPX","L089","Infecção local da pele","",17],
-["WEMESSON JOSE DOS SANTOS","04/08/2025",1,"25/04/2026","ISABEL SANDRA DA NOBREGA ARAUJO","STERFFERSON NELIO FELIPE CABRAL","N/A","SPX","SEM MARCAÇÃO NO PONTO","","Ajuste",17],
-["WILMA AVILA DE MENDONCA","10/02/2026",2,"25/04/2026","GUILHERME SILVA CRUZ","KARLA CERAVOLO (T3)","NÃO","SPX","M54","Dorsalgia (dor nas costas)","",17]
-];
+// ╔══════════════════════════════════════════════════════════╗
+// ║  COLE A URL DO SEU APPS SCRIPT AQUI ↓                   ║
+// ╚══════════════════════════════════════════════════════════╝
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxx5h58eup9A9oYxUfFXJVmRRAGk2VfGM8_xxMxhBahWg1rxUgnDdatKLo8D3FaesNa/exec';
+// Exemplo:
+// const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx.../exec';
 
-const FIELDS={NOME:0,ADM:1,DIAS:2,DATA:3,GESTOR:4,COORD:5,ENTREVISTA:6,CONTRATO:7,CID:8,MOTIVO:9,OBS:10,SEMANA:11};
+// ═══════════════════════════════════════════════════════════
+const COLORS = ['#EE4D2D','#F5810A','#FFBA49','#3B6D11','#185FA5','#854F0B','#993356'];
+let USUARIO_MAP = {}, RAW = [], sortCol = 'data', sortAsc = true, donutChart = null;
 
-const COORD_SHORT={
-  "ALISSON GUTEMBERG DOS SANTOS":"Alisson",
-  "KARLA CERAVOLO":"Karla",
-  "KARLA CERAVOLO (T1)":"Karla T1",
-  "KARLA CERAVOLO (T3)":"Karla T3",
-  "INVENTÁRIO":"Inventário",
-  "STERFFERSON NELIO FELIPE CABRAL":"Sterfferson",
-  "RICARDO RODRIGUES VIEIRA DE ABREU":"Ricardo"
-};
-const COORD_COLORS={
-  "ALISSON GUTEMBERG DOS SANTOS":"#EE4D2D",
-  "KARLA CERAVOLO":"#F59E0B",
-  "KARLA CERAVOLO (T1)":"#F59E0B",
-  "KARLA CERAVOLO (T3)":"#FBBF24",
-  "INVENTÁRIO":"#3B82F6",
-  "STERFFERSON NELIO FELIPE CABRAL":"#8B5CF6",
-  "RICARDO RODRIGUES VIEIRA DE ABREU":"#10B981"
-};
+window.addEventListener('DOMContentLoaded', loadData);
 
-let chartSemana=null,chartCoord=null,chartCid=null;
-let currentPage=1;const PAGE_SIZE=15;
-let sortBy='dias';
-
-function setSortBy(v){sortBy=v;['dias','ocorr','nome'].forEach(x=>{document.getElementById('sb-'+x).classList.toggle('active',x===v);});render();}
-
-function getChecked(id){return [...document.querySelectorAll(`#ms-dd-${id} input:checked`)].map(x=>x.value);}
-
-function toggleDropdown(id){
-  const dd=document.getElementById('ms-dd-'+id);
-  const btn=document.querySelector(`#ms-${id} .ms-btn`);
-  const isOpen=dd.classList.contains('open');
-  // close all
-  document.querySelectorAll('.ms-dropdown.open').forEach(el=>el.classList.remove('open'));
-  document.querySelectorAll('.ms-btn.open').forEach(el=>el.classList.remove('open'));
-  if(!isOpen){dd.classList.add('open');btn.classList.add('open');}
-}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.ms-wrap')){
-    document.querySelectorAll('.ms-dropdown.open').forEach(el=>el.classList.remove('open'));
-    document.querySelectorAll('.ms-btn.open').forEach(el=>el.classList.remove('open'));
+// ── Carregar dados ─────────────────────────────────────────
+async function loadData() {
+  if (!SCRIPT_URL || SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxVzQll2lc5k42v3m7SFFwN1Z-F0yfHjQGgDccyzBIXxr2H8e_AUwVCXvI2F411Zrgs/exec') {
+    setStatus('⚠️ Edite o arquivo <strong>index.html</strong> e cole a URL do Apps Script na variável <code>SCRIPT_URL</code>.', 'err');
+    return;
   }
-});
-
-function updateBadges(){
-  ['semana','coord','status','obs'].forEach(id=>{
-    const checked=getChecked(id);
-    const btn=document.querySelector(`#ms-${id} .ms-btn`);
-    const count=document.getElementById('ms-count-'+id);
-    if(checked.length>0){
-      btn.classList.add('has-selection');
-      count.textContent=checked.length;
-      count.style.display='inline';
-    } else {
-      btn.classList.remove('has-selection');
-      count.style.display='none';
-    }
-  });
+  setStatus('⏳ Carregando dados...', 'loading');
+  try {
+    const resp = await fetch(SCRIPT_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();          // pega como texto primeiro
+    const json = JSON.parse(text);           // parseia manualmente (evita corrupção)
+    if (json.status === 'error') throw new Error(json.message);
+    if (!json.rows || !json.rows.length) throw new Error('Planilha sem dados.');
+    processData(json.rows);
+  } catch(e) {
+    const isFetch = e.message.includes('Failed to fetch') || e.message.includes('NetworkError');
+    setStatus(isFetch
+      ? '❌ Não foi possível conectar. Verifique se o script foi publicado como <strong>"Qualquer pessoa"</strong>.'
+      : '❌ ' + e.message, 'err');
+  }
 }
 
-function onFilterChange(){updateBadges();currentPage=1;render();}
+// ── Processar dados ────────────────────────────────────────
+function processData(rows) {
+  USUARIO_MAP = {};
+  const keys = Object.keys(rows[0]);
+  // Normaliza string para comparação (sem acento, minúsculo)
+  const n = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const find = al => keys.find(k => al.some(a => n(k).includes(n(a)))) || '';
 
-function resetFilters(){
-  document.querySelectorAll('.ms-dropdown input[type=checkbox]').forEach(cb=>cb.checked=false);
-  document.getElementById('search-input').value='';
-  updateBadges();
-  currentPage=1;
+  const K = {
+    data:        find(['data/hora','data','date']),
+    cad:         find(['cad']),
+    usuario:     find(['usuario','user','email']),
+    gestor:      find(['gestor','manager']),
+    colaborador: find(['colaborador','funcionario']),
+    tipo:        find(['tipo de feedback','tipo']),
+    status:      find(['endereco tratado','status','situacao']),
+    nota:        find(['nota','grade']),
+    mensagem:    find(['mensagem','observacao','descricao']),
+    assinatura:  find(['assinatura (texto)','assinatura(texto)','assinatura texto','assinatura']),
+  };
+
+  console.log('🔍 Colunas detectadas:', K);
+  console.log('📋 Colunas da planilha:', keys);
+
+  RAW = rows.map(r => {
+    const usuario = (r[K.usuario] || '').trim();
+    const gestor  = (r[K.gestor]  || '').trim();
+    const key     = usuario || gestor;
+
+    // Monta mapa email → nome canônico (mais curto)
+    if (key && (!USUARIO_MAP[key] || gestor.length < (USUARIO_MAP[key]||'').length))
+      USUARIO_MAP[key] = gestor;
+
+    // Assinatura: limpa e garante prefixo correto
+    let assin = (r[K.assinatura] || '').trim().replace(/[\r\n\t]/g, '');
+    if (assin) {
+      if (!assin.startsWith('data:')) {
+        // Já é base64 puro — adiciona prefixo
+        assin = 'data:image/jpeg;base64,' + assin;
+      }
+      // Se vier com prefixo duplicado (data:image...base64,/9j/...) mantém como está
+    }
+
+    return {
+      data:        (r[K.data] || '').substring(0, 16),
+      cad:         (r[K.cad]  || '').trim(),
+      usuario:     key,
+      colaborador: (r[K.colaborador] || '').trim(),
+      tipo:        (r[K.tipo]        || '').trim(),
+      status:      (r[K.status]      || '').trim(),
+      nota:        parseInt(r[K.nota]) || 0,
+      mensagem:    (r[K.mensagem]    || '').trim(),
+      assinatura:  assin,
+    };
+  }).filter(r => r.colaborador || r.usuario);
+
+  // Normaliza nome do gestor
+  RAW.forEach(r => { r.gestor = USUARIO_MAP[r.usuario] || r.usuario; });
+
+  // Debug: mostra quantos têm assinatura
+  const comAssin = RAW.filter(r => r.assinatura).length;
+  console.log(`✅ ${RAW.length} registros | 🖊️ ${comAssin} com assinatura`);
+  if (comAssin > 0) {
+    console.log('📸 Amostra assinatura[0]:', RAW.find(r=>r.assinatura)?.assinatura?.substring(0,80));
+  }
+
+  buildFilters();
+  document.getElementById('dash').style.display = 'block';
+  setStatus(`✅ ${RAW.length} feedbacks carregados! (${comAssin} com assinatura)`, 'ok');
+  setTimeout(() => setStatus('', ''), 4000);
   render();
 }
 
-function getFiltered(){
-  const sems=getChecked('semana');
-  const coords=getChecked('coord');
-  const statuses=getChecked('status');
-  const obs=getChecked('obs');
-  const search=document.getElementById('search-input').value.toLowerCase();
-  return RAW.filter(r=>{
-    if(sems.length && !sems.includes(String(r[FIELDS.SEMANA])))return false;
-    if(coords.length && !coords.some(c=>r[FIELDS.COORD].toUpperCase().includes(c.toUpperCase())))return false;
-    if(statuses.length){
-      const passStatus=statuses.some(s=>{
-        if(s==='abandon')return isAbandon(r);
-        if(s==='desligado')return r[FIELDS.OBS]==='Desligado';
-        if(s==='sem_entrevista')return r[FIELDS.ENTREVISTA]!=='SIM';
-        return false;
-      });
-      if(!passStatus)return false;
-    }
-    if(obs.length){
-      const passObs=obs.some(o=>{
-        if(o==='sem_obs')return !r[FIELDS.OBS];
-        return r[FIELDS.OBS]===o;
-      });
-      if(!passObs)return false;
-    }
-    if(search&&![r[FIELDS.NOME],r[FIELDS.GESTOR],r[FIELDS.COORD],r[FIELDS.MOTIVO]].join(' ').toLowerCase().includes(search))return false;
+// ── Filtrar ────────────────────────────────────────────────
+function filtered() {
+  const g  = document.getElementById('fG')?.value  || '';
+  const ca = document.getElementById('fCA')?.value || '';
+  const c  = document.getElementById('fC')?.value  || '';
+  const t  = document.getElementById('fT')?.value  || '';
+  const s  = document.getElementById('fS')?.value  || '';
+  const b  = (document.getElementById('busca')?.value || '').toLowerCase();
+  let rows = RAW.filter(r => {
+    if (g  && r.usuario     !== g)  return false;
+    if (ca && r.cad         !== ca) return false;
+    if (c  && r.colaborador !== c)  return false;
+    if (t  && r.tipo        !== t)  return false;
+    if (s  && r.status      !== s)  return false;
+    if (b  && ![r.colaborador,r.gestor,r.tipo,r.mensagem,r.cad].join(' ').toLowerCase().includes(b)) return false;
     return true;
   });
+  rows.sort((a, b) => {
+    const va = a[sortCol], vb = b[sortCol];
+    if (sortCol === 'nota') return sortAsc ? va-vb : vb-va;
+    return sortAsc ? String(va).localeCompare(String(vb),'pt-BR')
+                   : String(vb).localeCompare(String(va),'pt-BR');
+  });
+  return rows;
 }
 
-function isAbandon(r){return r[FIELDS.CID].includes('ABANDONO')||r[FIELDS.MOTIVO].includes('Abandono');}
-
-function groupByNome(data){
-  const map={};
-  data.forEach(r=>{
-    const n=r[FIELDS.NOME];
-    if(!map[n])map[n]={nome:n,coord:r[FIELDS.COORD],gestor:r[FIELDS.GESTOR],dias:0,ocorr:0,semanas:new Set(),entrevistas:[],cids:[],statuses:[],abandon:false,desligado:false};
-    map[n].dias+=r[FIELDS.DIAS];
-    map[n].ocorr++;
-    map[n].semanas.add(r[FIELDS.SEMANA]);
-    map[n].entrevistas.push(r[FIELDS.ENTREVISTA]);
-    if(r[FIELDS.CID]&&!r[FIELDS.CID].includes('MARCAÇÃO')&&!r[FIELDS.CID].includes('CID')&&!r[FIELDS.CID].includes('ABANDONO'))map[n].cids.push(r[FIELDS.CID]);
-    if(isAbandon(r))map[n].abandon=true;
-    if(r[FIELDS.OBS]==='Desligado')map[n].desligado=true;
-    map[n].statuses.push(r[FIELDS.OBS]);
-  });
-  return Object.values(map);
+function renderMetrics(rows) {
+  const concl = rows.filter(r => r.status === 'Concluido').length;
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric"><label>Total</label><span>${rows.length}</span></div>
+    <div class="metric"><label>Concluídos</label><span class="v3">${concl}</span></div>
+    <div class="metric"><label>Gestores</label><span class="v4">${new Set(rows.map(r=>r.usuario)).size}</span></div>
+    <div class="metric"><label>Colaboradores</label><span class="v4">${new Set(rows.map(r=>r.colaborador)).size}</span></div>`;
 }
 
-function render(){
-  const filtered=getFiltered();
-  const search=document.getElementById('search-input').value.toLowerCase();
-  const grouped=groupByNome(filtered);
+function renderCharts(rows) {
+  const gm={};rows.forEach(r=>{gm[r.gestor]=(gm[r.gestor]||0)+1;});
+  const gk=Object.keys(gm).sort((a,b)=>gm[b]-gm[a]);
+  const gmax=Math.max(...Object.values(gm),1);
+  document.getElementById('cg').innerHTML=gk.map((g,i)=>`
+    <div class="br"><div class="bl" title="${esc(g)}">${g.split(' ')[0]}</div>
+    <div class="bt"><div class="bf" style="width:${Math.round(gm[g]/gmax*100)}%;background:${COLORS[i%COLORS.length]}"></div></div>
+    <div class="bv">${gm[g]}</div></div>`).join('');
 
-  const totalDias=filtered.reduce((s,r)=>s+r[FIELDS.DIAS],0);
-  const totalColab=new Set(filtered.map(r=>r[FIELDS.NOME])).size;
-  const semEntrevista=grouped.filter(g=>!g.entrevistas.some(e=>e==='SIM')).length;
-  const abandons=grouped.filter(g=>g.abandon);
-
-  document.getElementById('kpi-total').textContent=filtered.length;
-  document.getElementById('kpi-dias').textContent=totalDias;
-  document.getElementById('kpi-colab').textContent=totalColab;
-  document.getElementById('kpi-entrevista').textContent=semEntrevista;
-  document.getElementById('kpi-abandon').textContent=abandons.length;
-
-  const alertBox=document.getElementById('alert-box');
-  if(abandons.length>0){alertBox.style.display='flex';document.getElementById('alert-count').textContent=abandons.length+' ('+abandons.map(a=>a.nome.split(' ')[0]).join(', ')+')';}
-  else alertBox.style.display='none';
-
-  updateCharts(filtered);
-
-  let display=grouped.filter(g=>!search||g.nome.toLowerCase().includes(search));
-  if(sortBy==='dias')display.sort((a,b)=>b.dias-a.dias);
-  else if(sortBy==='ocorr')display.sort((a,b)=>b.ocorr-a.ocorr);
-  else display.sort((a,b)=>a.nome.localeCompare(b.nome));
-
-  const maxDias=display[0]?display[0].dias||1:1;
-  const total=display.length;
-  const pages=Math.ceil(total/PAGE_SIZE);
-  if(currentPage>pages)currentPage=1;
-  const slice=display.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
-
-  const tbody=document.getElementById('table-body');
-  if(slice.length===0){tbody.innerHTML='<tr><td colspan="10" class="no-data">Nenhum registro encontrado.</td></tr>';return;}
-
-  // Build full-RAW recurrence map (all weeks per person, regardless of filters)
-  const allWeeks=[...new Set(RAW.map(r=>r[FIELDS.SEMANA]).filter(Boolean))].sort((a,b)=>a-b);
-  const rawRecorr={};
-  RAW.forEach(r=>{
-    const n=r[FIELDS.NOME];
-    if(!rawRecorr[n])rawRecorr[n]=new Set();
-    rawRecorr[n].add(r[FIELDS.SEMANA]);
-  });
-
-  tbody.innerHTML=slice.map((g,i)=>{
-    const rank=(currentPage-1)*PAGE_SIZE+i+1;
-    const hasEntrevista=g.entrevistas.some(e=>e==='SIM');
-    const semsArr=Array.from(g.semanas).sort();
-    const semBadges=semsArr.map(s=>`<span class="week-badge w${s}">S${s}</span>`).join('');
-    const pct=Math.min(100,Math.round(g.dias/maxDias*100));
-    const isHigh=g.dias>=7;
-    const topCid=g.cids[0]||'—';
-    let statusPill='';
-    if(g.abandon)statusPill=`<span class="status-pill pill-abandon">Abandono</span>`;
-    else if(g.desligado)statusPill=`<span class="status-pill pill-desligado">Desligado</span>`;
-    else statusPill=`<span class="status-pill pill-none">—</span>`;
-    const coordShort=COORD_SHORT[g.coord]||g.coord;
-
-    // Recorrência: semanas com atestado no histórico completo
-    const personWeeks=rawRecorr[g.nome]||new Set();
-    const hitCount=allWeeks.filter(w=>personWeeks.has(w)).length;
-    const pips=allWeeks.map(w=>{
-      const hit=personWeeks.has(w);
-      return `<div class="recorr-dot">
-        <div class="recorr-pip ${hit?'hit':'miss'}">${hit?'✓':'·'}</div>
-        <span>S${w}</span>
-      </div>`;
-    }).join('');
-    let badgeClass='baixo', badgeLabel='1ª vez';
-    if(hitCount>=3){badgeClass='alto';badgeLabel='Reincidente';}
-    else if(hitCount===2){badgeClass='medio';badgeLabel='2ª vez';}
-    const recorrCell=`<div class="recorr-grid">${pips}<span class="recorr-badge ${badgeClass}">${badgeLabel}</span></div>`;
-
-    return `<tr>
-      <td style="color:var(--muted);font-size:12px;font-weight:600;">${rank}</td>
-      <td>
-        <div class="name-cell" title="${g.nome}">${g.nome}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${g.gestor.split(' ')[0]} ${g.gestor.split(' ')[1]||''}</div>
-      </td>
-      <td><span style="font-size:12px;color:${COORD_COLORS[g.coord]||'var(--muted)'};">${coordShort}</span></td>
-      <td>${semBadges}</td>
-      <td style="font-size:13px;font-weight:600;color:var(--muted);">${g.ocorr}</td>
-      <td>
-        <div class="dias-bar">
-          <span class="dias-num" style="color:${isHigh?'var(--red)':'var(--orange)'};">${g.dias}</span>
-          <div class="bar-track"><div class="bar-fill${isHigh?' high':''}" style="width:${pct}%"></div></div>
-        </div>
-      </td>
-      <td>${recorrCell}</td>
-      <td><span class="entrevista-dot ${hasEntrevista?'dot-ok':'dot-no'}"></span><span style="font-size:12px;color:${hasEntrevista?'var(--green)':'var(--red)'};">${hasEntrevista?'Sim':'Não'}</span></td>
-      <td>${statusPill}</td>
-      <td><span class="cid-tag" title="${topCid}">${topCid.length>12?topCid.substring(0,12)+'…':topCid}</span></td>
-    </tr>`;
+  const nm={},nc={};rows.forEach(r=>{nm[r.gestor]=(nm[r.gestor]||0)+r.nota;nc[r.gestor]=(nc[r.gestor]||0)+1;});
+  const nk=Object.keys(nm).sort((a,b)=>(nm[b]/nc[b])-(nm[a]/nc[a]));
+  document.getElementById('cn').innerHTML=nk.map((g,i)=>{
+    const avg=(nm[g]/nc[g]).toFixed(1);
+    return `<div class="br"><div class="bl" title="${esc(g)}">${g.split(' ')[0]}</div>
+    <div class="bt"><div class="bf" style="width:${Math.round(avg/10*100)}%;background:${COLORS[i%COLORS.length]}"></div></div>
+    <div class="bv">${avg}</div></div>`;
   }).join('');
 
-  const pag=document.getElementById('pagination');
-  if(pages<=1){pag.innerHTML='';return;}
-  let btns=`<span class="page-info">${total} colaboradores</span>`;
-  for(let p=1;p<=pages;p++){btns+=`<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;}
-  pag.innerHTML=btns;
-}
-
-function goPage(p){currentPage=p;render();}
-
-function updateCharts(data){
-  // Build dynamic week list from all RAW data (not just filtered)
-  const allWeeks=[...new Set(RAW.map(r=>r[FIELDS.SEMANA]).filter(Boolean))].sort((a,b)=>a-b);
-  const semCount={},semDias={};
-  allWeeks.forEach(w=>{semCount[w]=0;semDias[w]=0;});
-  const coordCount={};
-  const cidCount={};
-  data.forEach(r=>{
-    const s=r[FIELDS.SEMANA];
-    if(semCount[s]!==undefined){semCount[s]++;semDias[s]+=r[FIELDS.DIAS];}
-    const c=r[FIELDS.COORD]||'Outros';
-    coordCount[c]=(coordCount[c]||0)+1;
-    let cid=r[FIELDS.MOTIVO]||r[FIELDS.CID]||'';
-    if(cid&&!cid.includes('MARCAÇÃO')&&!cid.includes('CID')&&!cid.includes('ABANDONO')&&!cid.includes('SEM')&&cid.length>2){
-      const short=cid.length>25?cid.substring(0,25)+'…':cid;
-      cidCount[short]=(cidCount[short]||0)+1;
-    } else if(!cid||cid.includes('MARCAÇÃO')||cid.includes('SEM')){
-      cidCount['Sem marcação no ponto']=(cidCount['Sem marcação no ponto']||0)+1;
-    }
-  });
-
-  if(chartSemana)chartSemana.destroy();
-  chartSemana=new Chart(document.getElementById('chartSemana'),{
-    type:'bar',
-    data:{
-      labels:allWeeks.map(w=>'Sem '+w),
-      datasets:[
-        {label:'Ocorrências',data:allWeeks.map(w=>semCount[w]),backgroundColor:'#EE4D2D',borderRadius:5,borderSkipped:false},
-        {label:'Dias ABS',data:allWeeks.map(w=>semDias[w]),backgroundColor:'rgba(238,77,45,0.25)',borderRadius:5,borderSkipped:false}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#888',font:{family:'Outfit',size:11},boxWidth:10}}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#888',font:{family:'Outfit',size:11}}},
-        y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#888',font:{family:'Outfit',size:11}},beginAtZero:true}
-      }
-    }
-  });
-
-  const coordLabels=Object.keys(coordCount);
-  const coordVals=Object.values(coordCount);
-  const coordColors=coordLabels.map(l=>COORD_COLORS[l]||'#555');
-  if(chartCoord)chartCoord.destroy();
-  chartCoord=new Chart(document.getElementById('chartCoord'),{
+  const tm={};rows.forEach(r=>{tm[r.tipo]=(tm[r.tipo]||0)+1;});
+  const tk=Object.keys(tm).sort((a,b)=>tm[b]-tm[a]);
+  const tco=tk.map((_,i)=>COLORS[i%COLORS.length]);
+  if(donutChart){donutChart.destroy();donutChart=null;}
+  donutChart=new Chart(document.getElementById('dc').getContext('2d'),{
     type:'doughnut',
-    data:{labels:coordLabels,datasets:[{data:coordVals,backgroundColor:coordColors,borderWidth:0,hoverOffset:4}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,cutout:'70%',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${COORD_SHORT[ctx.label]||ctx.label}: ${ctx.parsed}`}}}
-    }
+    data:{labels:tk,datasets:[{data:tk.map(k=>tm[k]),backgroundColor:tco,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}`}}},cutout:'58%'}
   });
-  const legend=document.getElementById('coord-legend');
-  legend.innerHTML=coordLabels.map((l,i)=>`<span class="coord-item"><span class="coord-dot" style="background:${coordColors[i]};"></span>${COORD_SHORT[l]||l}: ${coordVals[i]}</span>`).join('');
-
-  const cidSorted=Object.entries(cidCount).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  const cidLabels=cidSorted.map(x=>x[0]);
-  const cidVals=cidSorted.map(x=>x[1]);
-  const wrapH=Math.max(200,cidLabels.length*32+60);
-  document.querySelector('.chart-wrap:last-of-type').style.height=wrapH+'px';
-  if(chartCid)chartCid.destroy();
-  chartCid=new Chart(document.getElementById('chartCid'),{
-    type:'bar',
-    data:{
-      labels:cidLabels,
-      datasets:[{data:cidVals,backgroundColor:'rgba(59,130,246,0.7)',borderRadius:4,borderSkipped:false}]
-    },
-    options:{
-      indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#888',font:{family:'Outfit',size:10}},beginAtZero:true},
-        y:{grid:{display:false},ticks:{color:'#aaa',font:{family:'Outfit',size:10}}}
-      }
-    }
-  });
+  document.getElementById('dl').innerHTML=tk.map((k,i)=>
+    `<div class="legr"><div class="legd" style="background:${tco[i]}"></div><span>${esc(k)} (${tm[k]})</span></div>`).join('');
 }
 
-function loadCSV(input){
-  const file=input.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const text=e.target.result;
-      const lines=text.split(/\r?\n/).filter(l=>l.trim()&&l.split(';')[0].trim());
-      if(lines.length<2){alert('CSV vazio ou formato inválido.');return;}
-      const parsed=[];
-      const header=lines[0].split(';');
-      // Expected: NOME COMPLETO;ADMISSÃO;QTDADE DIAS DO ATESTADO;DATA INICIO ATESTADO;GESTOR IMEDIATO;COORDENADOR;ENTREVISTA;CONTRATO;CID;MOTIVO CID;Obs;Semana
-      for(let i=1;i<lines.length;i++){
-        const cols=lines[i].split(';');
-        if(!cols[0]||!cols[0].trim())continue;
-        const dias=parseInt(cols[2])||0;
-        const semana=parseInt(cols[11])||0;
-        if(!dias&&!semana)continue;
-        parsed.push([
-          cols[0].trim(),  // nome
-          cols[1]?cols[1].trim():'',  // admissao
-          dias,            // dias
-          cols[3]?cols[3].trim():'',  // data inicio
-          cols[4]?cols[4].trim():'',  // gestor
-          cols[5]?cols[5].trim():'',  // coord
-          cols[6]?cols[6].trim():'',  // entrevista
-          cols[7]?cols[7].trim():'SPX', // contrato
-          cols[8]?cols[8].trim():'',  // cid
-          cols[9]?cols[9].trim():'',  // motivo
-          cols[10]?cols[10].trim():'', // obs
-          semana           // semana
-        ]);
-      }
-      if(parsed.length===0){alert('Nenhum registro válido encontrado no CSV.');return;}
-      RAW.length=0;
-      parsed.forEach(r=>RAW.push(r));
-      // Update week badge
-      const weeks=[...new Set(RAW.map(r=>r[11]).filter(Boolean))].sort((a,b)=>a-b);
-      document.getElementById('badge-semanas').textContent='SEMANAS '+weeks[0]+'–'+weeks[weeks.length-1];
-      // Rebuild week filter options
-      const sel=document.getElementById('sel-semana');
-      while(sel.options.length>1)sel.remove(1);
-      weeks.forEach(w=>{const o=new Option('Semana '+w,w);sel.add(o);});
-      // Rebuild OBS filter options
-      const obsVals=[...new Set(RAW.map(r=>r[10]).filter(Boolean))].sort();
-      const selObs=document.getElementById('sel-obs');
-      while(selObs.options.length>1)selObs.remove(1);
-      obsVals.forEach(v=>{const o=new Option(v,v);selObs.add(o);});
-      selObs.add(new Option('Sem OBS','sem_obs'));
-      currentPage=1;
-      saveToStorage();
-      resetFilters();
-      const status=document.getElementById('import-status');
-      status.textContent=`✓ ${parsed.length} registros importados e salvos`;
-      status.style.display='block';
-      setTimeout(()=>status.style.display='none',3500);
-    }catch(err){alert('Erro ao processar CSV: '+err.message);}
-  };
-  reader.readAsText(file,'Windows-1252');
+function renderTable(rows) {
+  document.getElementById('cnt').textContent=`${rows.length} de ${RAW.length}`;
+  const tb=document.getElementById('tbody');
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="8" class="empty">Nenhum feedback encontrado.</td></tr>`;return;}
+  tb.innerHTML=rows.map(r=>{
+    const idx=RAW.indexOf(r);
+    const sc=r.status==='Concluido'?'color:#3B6D11':'color:#854F0B';
+    const temAssin = r.assinatura ? '🖊️' : '';
+    return `<tr>
+      <td title="${esc(r.data)}">${r.data.split(' ')[0]}</td>
+      <td>${r.cad?`<span class="cad-badge">${esc(r.cad)}</span>`:''}</td>
+      <td title="${esc(r.gestor)}">${r.gestor.split(' ')[0]}</td>
+      <td title="${esc(r.colaborador)}">${esc(r.colaborador)}</td>
+      <td><span class="badge ${tc(r.tipo)}">${esc(r.tipo)}</span></td>
+      <td><div class="nb"><div class="nf"><div class="nfil" style="width:${r.nota*10}%"></div></div><span class="nn">${r.nota}</span></div></td>
+      <td><span style="${sc};font-size:11px">${esc(r.status)}</span></td>
+      <td><button class="asb" onclick="verAssinatura(${idx})" title="${temAssin ? 'Assinatura disponível' : 'Sem assinatura'}">${temAssin} Ver ↗</button></td>
+    </tr>`;
+  }).join('');
 }
 
-const STORAGE_KEY='shopee_abs_data';
-const STORAGE_META='shopee_abs_meta';
+function render(){const rows=filtered();renderMetrics(rows);renderCharts(rows);renderTable(rows);}
+function sortBy(col){if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=true;}render();}
+function limpar(){['fG','fCA','fC','fT','fS'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('busca').value='';render();}
 
-function saveToStorage(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(RAW));
-    const weeks=[...new Set(RAW.map(r=>r[11]).filter(Boolean))].sort();
-    localStorage.setItem(STORAGE_META,JSON.stringify({weeks,savedAt:new Date().toISOString(),count:RAW.length}));
-    updateStorageIndicator();
-  }catch(e){console.warn('Erro ao salvar:',e);}
+function buildFilters() {
+  const USUARIOS = [...new Set(RAW.map(r=>r.usuario).filter(Boolean))].sort((a,b)=>(USUARIO_MAP[a]||a).localeCompare(USUARIO_MAP[b]||b,'pt-BR'));
+  const COLABS   = [...new Set(RAW.map(r=>r.colaborador).filter(Boolean))].sort();
+  const TIPOS    = [...new Set(RAW.map(r=>r.tipo).filter(Boolean))].sort();
+  const CADS     = [...new Set(RAW.map(r=>r.cad).filter(Boolean))].sort();
+  const STATS    = [...new Set(RAW.map(r=>r.status).filter(Boolean))].sort();
+  document.getElementById('fa').innerHTML=`
+    <div><select id="fG" onchange="render()"><option value="">Todos os gestores</option>${USUARIOS.map(u=>`<option value="${esc(u)}">${esc(USUARIO_MAP[u]||u)}</option>`).join('')}</select></div>
+    <div><select id="fCA" onchange="render()"><option value="">Todos os CADs</option>${CADS.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+    <div><select id="fC" onchange="render()"><option value="">Todos os colaboradores</option>${COLABS.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+    <div><select id="fT" onchange="render()"><option value="">Todos os tipos</option>${TIPOS.map(t=>`<option>${esc(t)}</option>`).join('')}</select></div>
+    <div><select id="fS" onchange="render()"><option value="">Todos os status</option>${STATS.map(s=>`<option>${esc(s)}</option>`).join('')}</select></div>`;
 }
 
-function loadFromStorage(){
-  try{
-    const saved=localStorage.getItem(STORAGE_KEY);
-    const meta=localStorage.getItem(STORAGE_META);
-    if(!saved)return false;
-    const parsed=JSON.parse(saved);
-    if(!parsed||!parsed.length)return false;
-    RAW.length=0;
-    parsed.forEach(r=>RAW.push(r));
-    if(meta){
-      const m=JSON.parse(meta);
-      const weeks=m.weeks||[...new Set(RAW.map(r=>r[11]).filter(Boolean))].sort();
-      document.getElementById('badge-semanas').textContent='SEMANAS '+weeks.join(', ');
-      const sel=document.getElementById('sel-semana');
-      while(sel.options.length>1)sel.remove(1);
-      weeks.forEach(w=>{const o=new Option('Semana '+w,w);sel.add(o);});
-    }
-    return true;
-  }catch(e){return false;}
+// ── Modal assinatura ───────────────────────────────────────
+function verAssinatura(idx) {
+  const r = RAW[idx];
+  const old = document.getElementById('modal'); if(old) old.remove();
+  const temAssin = r.assinatura && r.assinatura.length > 100;
+  const m = document.createElement('div');
+  m.id='modal'; m.className='modal-ov';
+  m.innerHTML=`
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#EE4D2D"></div>
+          <span style="font-size:14px;font-weight:500">Assinatura do Colaborador</span>
+        </div>
+        <button onclick="document.getElementById('modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:#aaa">×</button>
+      </div>
+      <div style="background:#FFF0ED;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #EE4D2D">
+        <div style="font-size:12px;font-weight:500;color:#EE4D2D">${esc(r.colaborador)}</div>
+        <div style="font-size:11px;color:#666;margin-top:3px">Gestor: ${esc(r.gestor)} · ${esc(r.data)}${r.cad ? ` · <span class="cad-badge" style="font-size:10px">${esc(r.cad)}</span>` : ''}</div>
+        <div style="display:flex;gap:8px;margin-top:5px;align-items:center;flex-wrap:wrap">
+          <span class="badge ${tc(r.tipo)}" style="font-size:10px">${esc(r.tipo)}</span>
+          <span style="font-size:11px;color:#185FA5;font-weight:500">Nota: ${r.nota}/10</span>
+          <span style="font-size:11px;color:${r.status==='Concluido'?'#3B6D11':'#854F0B'}">${esc(r.status)}</span>
+        </div>
+      </div>
+      <div id="assinContainer" style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:12px;background:#f9f9f9;min-height:80px;display:flex;align-items:center;justify-content:center">
+        ${temAssin
+          ? `<img id="assinImg" style="max-width:100%;max-height:260px;display:block;object-fit:contain" alt="Assinatura de ${esc(r.colaborador)}"/>`
+          : `<p style="padding:1.5rem;font-size:12px;color:#999;text-align:center">✍ Assinatura não disponível neste registro.</p>`}
+      </div>
+      <div style="font-size:11px;color:#555;border-top:1px solid #eee;padding-top:10px;line-height:1.7;max-height:110px;overflow:auto">
+        <strong style="color:#1a1a1a;display:block;margin-bottom:3px">Mensagem:</strong>${esc(r.mensagem)}
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click', e => { if(e.target===m) m.remove(); });
+
+  // Carrega imagem após inserir no DOM (evita problemas com src muito grande)
+  if (temAssin) {
+    const img = document.getElementById('assinImg');
+    img.onload = () => console.log('✅ Assinatura carregada com sucesso');
+    img.onerror = () => {
+      console.error('❌ Erro ao carregar assinatura. Prefixo:', r.assinatura?.substring(0,50));
+      document.getElementById('assinContainer').innerHTML =
+        '<p style="padding:1rem;font-size:12px;color:#999;text-align:center">Erro ao carregar imagem.<br>Verifique o console (F12) para detalhes.</p>';
+    };
+    img.src = r.assinatura;
+  }
 }
 
-function clearStorage(){
-  if(!confirm('Apagar dados salvos e voltar para a base original?'))return;
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(STORAGE_META);
-  location.reload();
-}
-
-function updateStorageIndicator(){
-  try{
-    const meta=localStorage.getItem(STORAGE_META);
-    const ind=document.getElementById('storage-indicator');
-    if(!meta){ind.style.display='none';return;}
-    const m=JSON.parse(meta);
-    const dt=new Date(m.savedAt);
-    const fmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    ind.style.display='flex';
-    document.getElementById('storage-text').textContent=`Salvo automaticamente · ${m.count} registros · ${fmt}`;
-  }catch(e){}
-}
-
-const hadSaved=loadFromStorage();
-updateStorageIndicator();
-render();
-if(hadSaved){
-  const status=document.getElementById('import-status');
-  const meta=localStorage.getItem(STORAGE_META);
-  if(meta){const m=JSON.parse(meta);status.textContent=`↺ ${m.count} registros restaurados do armazenamento local`;status.style.display='block';setTimeout(()=>status.style.display='none',3500);}
-}
+// ── Helpers ────────────────────────────────────────────────
+function tc(t){if(!t)return 't-out';if(t.includes('PNE'))return 't-pne';if(t.includes(' - PE'))return 't-pe';if(t.includes('Qualidade'))return 't-qp';if(t==='Sobra')return 't-sobra';if(t==='Falta')return 't-falta';return 't-out';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setStatus(msg,type){const el=document.getElementById('statusBar');el.innerHTML=msg;el.className='status'+(type?' '+type:'');}
 </script>
 </body>
 </html>
