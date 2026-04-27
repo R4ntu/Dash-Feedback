@@ -123,6 +123,16 @@ tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
 .ms-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text);transition:background 0.1s;user-select:none;}
 .ms-item:hover{background:rgba(255,255,255,0.05);}
 .ms-item input[type=checkbox]{accent-color:var(--orange);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+.recorr-grid{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;}
+.recorr-dot{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.recorr-dot span{font-size:9px;color:var(--muted2);font-weight:500;line-height:1;}
+.recorr-pip{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;}
+.recorr-pip.hit{background:var(--orange);border-color:var(--orange);color:#fff;}
+.recorr-pip.miss{background:transparent;border-color:var(--muted2);color:var(--muted2);}
+.recorr-badge{font-size:10px;font-weight:600;border-radius:4px;padding:2px 6px;margin-left:4px;white-space:nowrap;}
+.recorr-badge.alto{background:rgba(255,75,75,0.15);color:var(--red);border:1px solid rgba(255,75,75,0.3);}
+.recorr-badge.medio{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.3);}
+.recorr-badge.baixo{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.3);}
 @media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr);}.charts-row{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -298,6 +308,7 @@ tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
           <th>Semanas</th>
           <th>Ocorr.</th>
           <th>Total Dias</th>
+          <th>Recorrência</th>
           <th>Entrevista</th>
           <th>Status</th>
           <th>Principal CID</th>
@@ -581,7 +592,16 @@ function render(){
   const slice=display.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
 
   const tbody=document.getElementById('table-body');
-  if(slice.length===0){tbody.innerHTML='<tr><td colspan="9" class="no-data">Nenhum registro encontrado.</td></tr>';return;}
+  if(slice.length===0){tbody.innerHTML='<tr><td colspan="10" class="no-data">Nenhum registro encontrado.</td></tr>';return;}
+
+  // Build full-RAW recurrence map (all weeks per person, regardless of filters)
+  const allWeeks=[...new Set(RAW.map(r=>r[FIELDS.SEMANA]).filter(Boolean))].sort((a,b)=>a-b);
+  const rawRecorr={};
+  RAW.forEach(r=>{
+    const n=r[FIELDS.NOME];
+    if(!rawRecorr[n])rawRecorr[n]=new Set();
+    rawRecorr[n].add(r[FIELDS.SEMANA]);
+  });
 
   tbody.innerHTML=slice.map((g,i)=>{
     const rank=(currentPage-1)*PAGE_SIZE+i+1;
@@ -596,6 +616,22 @@ function render(){
     else if(g.desligado)statusPill=`<span class="status-pill pill-desligado">Desligado</span>`;
     else statusPill=`<span class="status-pill pill-none">—</span>`;
     const coordShort=COORD_SHORT[g.coord]||g.coord;
+
+    // Recorrência: semanas com atestado no histórico completo
+    const personWeeks=rawRecorr[g.nome]||new Set();
+    const hitCount=allWeeks.filter(w=>personWeeks.has(w)).length;
+    const pips=allWeeks.map(w=>{
+      const hit=personWeeks.has(w);
+      return `<div class="recorr-dot">
+        <div class="recorr-pip ${hit?'hit':'miss'}">${hit?'✓':'·'}</div>
+        <span>S${w}</span>
+      </div>`;
+    }).join('');
+    let badgeClass='baixo', badgeLabel='1ª vez';
+    if(hitCount>=3){badgeClass='alto';badgeLabel='Reincidente';}
+    else if(hitCount===2){badgeClass='medio';badgeLabel='2ª vez';}
+    const recorrCell=`<div class="recorr-grid">${pips}<span class="recorr-badge ${badgeClass}">${badgeLabel}</span></div>`;
+
     return `<tr>
       <td style="color:var(--muted);font-size:12px;font-weight:600;">${rank}</td>
       <td>
@@ -611,6 +647,7 @@ function render(){
           <div class="bar-track"><div class="bar-fill${isHigh?' high':''}" style="width:${pct}%"></div></div>
         </div>
       </td>
+      <td>${recorrCell}</td>
       <td><span class="entrevista-dot ${hasEntrevista?'dot-ok':'dot-no'}"></span><span style="font-size:12px;color:${hasEntrevista?'var(--green)':'var(--red)'};">${hasEntrevista?'Sim':'Não'}</span></td>
       <td>${statusPill}</td>
       <td><span class="cid-tag" title="${topCid}">${topCid.length>12?topCid.substring(0,12)+'…':topCid}</span></td>
