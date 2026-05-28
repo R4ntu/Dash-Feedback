@@ -786,38 +786,13 @@ function openFb(id){
   document.getElementById('mBody').innerHTML=`
     ${hCards}
     <div class="igrid">${cells.map(r=>`<div class="icell"><div class="ilabel">${r.l}</div><div style="margin-top:2px">${r.h}</div></div>`).join('')}</div>
-    ${secHtml('🔍','Causa Raiz', f.causaRaiz)}
-    ${secHtml('⚡','Ações e Acordo', f.acoesEAcordo)}
+    ${secHtml('🔍','Causa Raiz', f.causaRaiz || f.causaraiz)}
+    ${secHtml('⚡','Ações Tomadas', f.acoes)}
+    ${secHtml('🤝','Acordo / Comprometimento', f.acordo)}
     ${secHtml('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
     <div class="sec"><div class="sec-t">✍️ Assinatura</div>${sigH}</div>
   `;
-  // ── DEBUG PANEL: mostra todos os campos do registro ──────────────────────
-  const allFields = Object.entries(f)
-    .filter(([k])=>!k.startsWith('_') && k!=='id')
-    .map(([k,v])=>{
-      const val = v ? String(v).slice(0,60)+(String(v).length>60?'…':'') : '';
-      const isEmpty = !v || String(v).trim()==='';
-      return `<div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(30,65,130,.15)">
-        <code style="color:${isEmpty?'#f87171':'#7dd3fc'};font-size:10px;min-width:180px;flex-shrink:0">${k}</code>
-        <span style="color:${isEmpty?'rgba(139,170,212,.4)':'#e8f0ff'};font-size:11px;word-break:break-all">${isEmpty?'(vazio)':val}</span>
-      </div>`;
-    }).join('');
-
-  const debugHtml = `<details style="margin-top:10px">
-    <summary style="font-size:10px;color:var(--txs);cursor:pointer;padding:6px 0;user-select:none">
-      🔧 Debug: campos do registro (${Object.keys(f).filter(k=>!k.startsWith('_')&&k!=='id').length} campos)
-    </summary>
-    <div style="background:rgba(5,8,25,.8);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:6px;max-height:300px;overflow-y:auto">
-      <div style="font-size:10px;color:var(--acc);margin-bottom:6px;font-weight:700">
-        Campo "Plano de Acompanhamento" detectado como: 
-        <code style="color:#fbbf24">${f.planoAcompanhamento!==undefined?'"planoAcompanhamento"':'NÃO ENCONTRADO ⚠️'}</code>
-      </div>
-      ${allFields}
-    </div>
-  </details>`;
-
-  document.getElementById('mBody').innerHTML += debugHtml;
-  document.getElementById('mFb').style.display='flex';
+    document.getElementById('mFb').style.display='flex';
 }
 
 // ─── PDF GENERATION ───────────────────────────────
@@ -896,8 +871,9 @@ function gerarPDF(){
   ${histHtml}
 
   <!-- SEÇÕES TEXTUAIS -->
-  ${sec('🔍','Causa Raiz', f.causaRaiz)}
-  ${sec('⚡','Ações e Acordo', f.acoesEAcordo)}
+  ${sec('🔍','Causa Raiz', f.causaRaiz||f.causaraiz)}
+  ${sec('⚡','Ações Tomadas', f.acoes)}
+  ${sec('🤝','Acordo / Comprometimento', f.acordo)}
   ${sec('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
 
   <!-- ASSINATURA -->
