@@ -321,24 +321,49 @@ async function fetchData(){
         'causaRaiz','causaraiz','causaRaíz','causa','Causa');
 
       // Coluna K: "Ações e Acordo" — UMA única coluna na planilha
-      // O Apps Script pode normalizar "Ações e Acordo" de várias formas:
-      const acoesEAcordo = getField(d,
-        // camelCase com variações de acento
+      let acoesEAcordo = getField(d,
         'açõesEAcordo','acoesEAcordo','açõeseacordo','acoesesacordo',
         'açõesacordo','acoesacordo','açõeseAcordo','acoesEacordo',
-        // sem acento
-        'acoesEAcordo','acoesacordo','acoese acordo',
-        // fallback: campo mais simples
-        'acoeseacordo','acoes','ações','Ações',
-        // com espaço literal normalizado para underscore
-        'ações_e_acordo','acoes_e_acordo');
+        'acoesEAcordo','acoesacordo','acoeseacordo',
+        'acoes','ações','Ações','ações_e_acordo','acoes_e_acordo',
+        'Ações e Acordo','ações e acordo');
+      // Busca fuzzy no RAW: chave que contenha "aco" (ou "aç") E "acordo"
+      if(!acoesEAcordo){
+        const fuzzyK = Object.entries(raw).find(([k])=>{
+          const kl = k.toLowerCase().replace(/\s+/g,'');
+          return (kl.includes('aco') || kl.includes('aç')) && kl.includes('acord');
+        }) || Object.entries(raw).find(([k])=>{
+          const kl = k.toLowerCase().replace(/\s+/g,'');
+          return kl.includes('acord') || kl.startsWith('aç');
+        });
+        if(fuzzyK) acoesEAcordo = fuzzyK[1];
+      }
 
       // Coluna L: "Plano de Acompanhamento"
-      const plano = getField(d,
+      // Busca exata (todas as normalizações possíveis)
+      let plano = getField(d,
         'planoDeAcompanhamento','planodeacompanhamento',
         'planoAcompanhamento','planoacompanhamento',
         'plano_de_acompanhamento','PlanoDeAcompanhamento',
-        'PlanoAcompanhamento','acompanhamento','Acompanhamento');
+        'PlanoAcompanhamento','acompanhamento','Acompanhamento',
+        'plano de acompanhamento','Plano de Acompanhamento',
+        'PlanoDeAcompanhamento','plano');
+      // Busca fuzzy no objeto RAW: pega qualquer chave que contenha "plano" e "acompanh"
+      if(!plano){
+        const fuzzyEntry = Object.entries(raw).find(([k])=>{
+          const kl = k.toLowerCase().replace(/\s+/g,'');
+          return kl.includes('plano') && kl.includes('acompanh');
+        });
+        if(fuzzyEntry) plano = fuzzyEntry[1];
+      }
+      // Busca fuzzy no objeto normalizado (d): varre todas as chaves
+      if(!plano){
+        const fuzzyEntry2 = Object.entries(d).find(([k])=>{
+          const kl = k.toLowerCase().replace(/\s+/g,'');
+          return kl.includes('plano') || kl.includes('acompanh');
+        });
+        if(fuzzyEntry2) plano = fuzzyEntry2[1];
+      }
 
       return {
         ...d,
@@ -350,13 +375,14 @@ async function fetchData(){
       };
     }).sort((a,b)=>b._ts-a._ts);
 
-    // DEBUG: loga as chaves do primeiro registro para diagnóstico de campo
+    // DEBUG: loga todas as chaves e valores do 1º registro para diagnóstico
     if(json.data.length > 0){
-      console.log('[Shopee FB] Chaves do 1º registro:', Object.keys(json.data[0]));
-      console.log('[Shopee FB] Valores campo K (Ações e Acordo):', 
-        Object.entries(json.data[0]).find(([k])=>k.toLowerCase().includes('a') && k.toLowerCase().includes('cord'))||
-        Object.entries(json.data[0]).find(([k])=>k.toLowerCase().includes('aco'))||
-        'campo não identificado automaticamente');
+      const first = json.data[0];
+      console.log('[Shopee FB] ══ CHAVES DO 1º REGISTRO ══');
+      Object.entries(first).forEach(([k,v])=>{
+        console.log(`  "${k}" → "${String(v).slice(0,80)}"`);
+      });
+      console.log('[Shopee FB] ══ FIM ══');
     }
     buildColabMap();
     document.getElementById('syncTxt').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -765,6 +791,32 @@ function openFb(id){
     ${secHtml('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
     <div class="sec"><div class="sec-t">✍️ Assinatura</div>${sigH}</div>
   `;
+  // ── DEBUG PANEL: mostra todos os campos do registro ──────────────────────
+  const allFields = Object.entries(f)
+    .filter(([k])=>!k.startsWith('_') && k!=='id')
+    .map(([k,v])=>{
+      const val = v ? String(v).slice(0,60)+(String(v).length>60?'…':'') : '';
+      const isEmpty = !v || String(v).trim()==='';
+      return `<div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(30,65,130,.15)">
+        <code style="color:${isEmpty?'#f87171':'#7dd3fc'};font-size:10px;min-width:180px;flex-shrink:0">${k}</code>
+        <span style="color:${isEmpty?'rgba(139,170,212,.4)':'#e8f0ff'};font-size:11px;word-break:break-all">${isEmpty?'(vazio)':val}</span>
+      </div>`;
+    }).join('');
+
+  const debugHtml = `<details style="margin-top:10px">
+    <summary style="font-size:10px;color:var(--txs);cursor:pointer;padding:6px 0;user-select:none">
+      🔧 Debug: campos do registro (${Object.keys(f).filter(k=>!k.startsWith('_')&&k!=='id').length} campos)
+    </summary>
+    <div style="background:rgba(5,8,25,.8);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:6px;max-height:300px;overflow-y:auto">
+      <div style="font-size:10px;color:var(--acc);margin-bottom:6px;font-weight:700">
+        Campo "Plano de Acompanhamento" detectado como: 
+        <code style="color:#fbbf24">${f.planoAcompanhamento!==undefined?'"planoAcompanhamento"':'NÃO ENCONTRADO ⚠️'}</code>
+      </div>
+      ${allFields}
+    </div>
+  </details>`;
+
+  document.getElementById('mBody').innerHTML += debugHtml;
   document.getElementById('mFb').style.display='flex';
 }
 
