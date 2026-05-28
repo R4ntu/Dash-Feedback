@@ -242,7 +242,7 @@ tr:hover td{background:rgba(56,189,248,.04);cursor:pointer}
 // ╔══════════════════════════════════════════════════╗
 // ║  COLE AQUI A URL DO SEU GOOGLE APPS SCRIPT       ║
 // ╚══════════════════════════════════════════════════╝
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNgYk-PSAzpskqN6LTsAh9Jqb39ph8E-nxQhaCloPw2NVCgBambS1Eug8OxVD7mKuf/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhryI6nhuPgr0gvsiBP8XDPF4v3yNUUYP4d5qhnNrSXCw_rSjqze4KXalYeIP1G87c/exec';
 
 const TIPO_C  ={Positivo:'#34d399',Elogio:'#a78bfa',Melhoria:'#fbbf24',Advertência:'#f87171',Comprometimento:'#fb923c'};
 const TURNO_C ={Manhã:'#38bdf8',Tarde:'#fb923c',Noite:'#a78bfa',Madrugada:'#34d399'};
@@ -788,7 +788,7 @@ function openFb(id){
     <div class="igrid">${cells.map(r=>`<div class="icell"><div class="ilabel">${r.l}</div><div style="margin-top:2px">${r.h}</div></div>`).join('')}</div>
     ${secHtml('🔍','Causa Raiz', f.causaRaiz || f.causaraiz)}
     ${secHtml('⚡','Ações e Acordo', f.acoes)}
-    ${secHtml('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
+    ${secHtml('📋','Plano de Acompanhamento', f.plano)}
     <div class="sec"><div class="sec-t">✍️ Assinatura</div>${sigH}</div>
   `;
     document.getElementById('mFb').style.display='flex';
@@ -872,7 +872,7 @@ function gerarPDF(){
   <!-- SEÇÕES TEXTUAIS -->
   ${sec('🔍','Causa Raiz', f.causaRaiz||f.causaraiz)}
   ${sec('⚡','Ações e Acordo', f.acoes)}
-  ${sec('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
+  ${sec('📋','Plano de Acompanhamento', f.plano)}
 
   <!-- ASSINATURA -->
   <div style="margin-top:18px">
