@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -52,7 +55,7 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Sans',system-ui,sans-s
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border .2s}
 .kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
 .kcard{position:relative;overflow:hidden;animation:fadeUp .35s ease both}
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}.cgrid>.fullrow{grid-column:1/-1}
 
 /* FILTERS */
 .filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(5,9,26,.7)}
@@ -186,13 +189,13 @@ tr:hover td{background:rgba(56,189,248,.04);cursor:pointer}
     <div class="cgrid">
       <div class="card" style="padding:18px"><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Feedbacks por Gestor</div><div style="position:relative;height:210px"><canvas id="cG"></canvas></div></div>
       <div class="card" style="padding:18px"><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Evolução Semanal</div><div style="position:relative;height:210px"><canvas id="cS"></canvas></div></div>
-      <div class="card" style="padding:18px"><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Distribuição por Tipo</div><div style="display:flex;align-items:center;gap:14px"><div style="position:relative;height:160px;width:160px;flex-shrink:0"><canvas id="cT"></canvas></div><div id="tLeg" style="flex:1;font-size:12px"></div></div></div>
-      <div class="card" style="padding:18px"><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>Nota Média por Gestor</div><div style="position:relative;height:210px"><canvas id="cN"></canvas></div></div>
+      <div class="card fullrow" style="padding:18px"><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Distribuição por Tipo</div><div style="display:flex;align-items:center;gap:24px"><div style="position:relative;height:180px;width:180px;flex-shrink:0"><canvas id="cT"></canvas></div><div id="tLeg" style="flex:1;font-size:12px;column-count:2;column-gap:20px"></div></div></div>
+
     </div>
     <div class="card" style="padding:0;overflow:hidden">
       <div class="filter-row">
         <div class="fsel-wrap"><label class="fsel-label" for="fGestor"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Gestor</label><select class="fsel" id="fGestor"><option value="">Todos os gestores</option></select></div>
-        <div class="fsel-wrap"><label class="fsel-label" for="fTurno"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Turno</label><select class="fsel" id="fTurno"><option value="">Todos os turnos</option></select></div>
+
         <div class="fsel-wrap"><label class="fsel-label" for="fTipo"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Tipo</label><select class="fsel" id="fTipo"><option value="">Todos os tipos</option></select></div>
         <div style="flex:1"></div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
@@ -229,7 +232,7 @@ tr:hover td{background:rgba(56,189,248,.04);cursor:pointer}
   <div class="modal">
     <div class="mhead">
       <div><div id="mName" style="font-size:16px;font-weight:700;color:#fff"></div><div id="mSub" style="font-size:12px;color:var(--txs);margin-top:3px"></div></div>
-      <div style="display:flex;align-items:center;gap:10px"><button class="btn" onclick="cm('mFb')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Fechar</button></div>
+      <div style="display:flex;align-items:center;gap:8px"><button class="btn" id="btnPdf" onclick="gerarPDF()" style="background:rgba(251,146,60,.15);border-color:rgba(251,146,60,.5);color:#fb923c;font-weight:700"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Gerar PDF</button><button class="btn" onclick="cm('mFb')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Fechar</button></div>
     </div>
     <div style="padding:20px" id="mBody"></div>
   </div>
@@ -248,7 +251,7 @@ function nc(n){n=+n;return n>=9?'#34d399':n>=7?'#38bdf8':n>=5?'#fbbf24':'#f87171
 
 let apiUrl = APPS_SCRIPT_URL.trim();
 let allData=[],filteredData=[],colabMap={},maxCC=1;
-let fState={gestor:'',turno:'',tipo:''};
+let fState={gestor:'',tipo:''};
 let sortCfg={key:'_ts',dir:-1};
 let page=1;const PAGE=10;
 let charts={};
@@ -313,38 +316,48 @@ async function fetchData(){
       const dh     = getField(d,'dataHora','dataHora','Data/Hora','data','Data','timestamp');
       const assin  = getField(d,'assinatura','Assinatura','ASSINATURA');
 
-      // Campos textuais do feedback — tenta várias grafias possíveis
+      // Coluna J: "Causa Raiz"
       const causaRaiz = getField(d,
-        'causaRaiz','causaRaiz','causaRaiz','causaRaiz',
-        'causaRaiz','causa','Causa','causaRaiz',
-        'causaRaíz','causaraiz','causaRaiz');
+        'causaRaiz','causaraiz','causaRaíz','causa','Causa');
 
-      const acoes = getField(d,
-        'acoes','ações','acoesTomadas','açõesTomadas',
-        'acoes','Ações','AçõesTomadas','AcoesTomadas',
-        'acaotomada','açãotomada','ação','acao',
-        'acoestomadas','açõestomadas');
+      // Coluna K: "Ações e Acordo" — UMA única coluna na planilha
+      // O Apps Script pode normalizar "Ações e Acordo" de várias formas:
+      const acoesEAcordo = getField(d,
+        // camelCase com variações de acento
+        'açõesEAcordo','acoesEAcordo','açõeseacordo','acoesesacordo',
+        'açõesacordo','acoesacordo','açõeseAcordo','acoesEacordo',
+        // sem acento
+        'acoesEAcordo','acoesacordo','acoese acordo',
+        // fallback: campo mais simples
+        'acoeseacordo','acoes','ações','Ações',
+        // com espaço literal normalizado para underscore
+        'ações_e_acordo','acoes_e_acordo');
 
-      const acordo = getField(d,
-        'acordo','acordoPlano','Acordo','AcordoPlano',
-        'acordo/plano','plano','Plano','acordoplano');
-
+      // Coluna L: "Plano de Acompanhamento"
       const plano = getField(d,
-        'planoAcompanhamento','plano_acompanhamento',
-        'PlanoAcompanhamento','planoDeAcompanhamento',
-        'plano de acompanhamento','planoacompanhamento',
-        'acompanhamento','Acompanhamento');
+        'planoDeAcompanhamento','planodeacompanhamento',
+        'planoAcompanhamento','planoacompanhamento',
+        'plano_de_acompanhamento','PlanoDeAcompanhamento',
+        'PlanoAcompanhamento','acompanhamento','Acompanhamento');
 
       return {
         ...d,
         id: getField(d,'id','ID') || i+1,
         turno, gestor, tipo, colaborador:colab, cad, wms, nota, assinatura:assin,
         dataHora: dh,
-        causaRaiz, acoes, acordo, planoAcompanhamento: plano,
-        _ts: dh ? new Date(dh) : new Date(0),
+        causaRaiz, acoesEAcordo, planoAcompanhamento: plano,
+        _ts: parseBRDate(dh) || new Date(0),
       };
     }).sort((a,b)=>b._ts-a._ts);
 
+    // DEBUG: loga as chaves do primeiro registro para diagnóstico de campo
+    if(json.data.length > 0){
+      console.log('[Shopee FB] Chaves do 1º registro:', Object.keys(json.data[0]));
+      console.log('[Shopee FB] Valores campo K (Ações e Acordo):', 
+        Object.entries(json.data[0]).find(([k])=>k.toLowerCase().includes('a') && k.toLowerCase().includes('cord'))||
+        Object.entries(json.data[0]).find(([k])=>k.toLowerCase().includes('aco'))||
+        'campo não identificado automaticamente');
+    }
     buildColabMap();
     document.getElementById('syncTxt').textContent='Atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('syncWrap').style.display='flex';
@@ -411,10 +424,10 @@ function histCell(row){
 // REMOVIDOS: Nota Média e Gestor Destaque
 const KICO={
   box:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`,
-  chk:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+
   uss:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   usr:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  alr:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+
   tgt:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
   zap:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
 };
@@ -428,8 +441,7 @@ function renderKPIs(){
   // REMOVIDOS: Nota Média (str) e Gestor Destaque (awd)
   const items=[
     {i:'box',l:'Total Feedbacks',v:n,s:'registros totais',c:'#38bdf8'},
-    {i:'chk',l:'Feedbacks Positivos',v:d.filter(x=>x.tipo==='Positivo'||x.tipo==='Elogio').length,s:'elogios registrados',c:'#34d399'},
-    {i:'alr',l:'Feedbacks Críticos',v:d.filter(x=>x.tipo==='Advertência').length,s:'advertências',c:'#f87171'},
+
     {i:'uss',l:'Gestores',v:[...new Set(d.map(x=>x.gestor).filter(Boolean))].length,s:'ativos',c:'#38bdf8'},
     {i:'usr',l:'Colaboradores',v:Object.keys(colabMap).length,s:'com registros',c:'#a78bfa'},
     {i:'tgt',l:'Mais Registros',v:topC?topC[0].split(' ')[0]:'—',s:topC?`${topC[1].total} feedbacks`:'—',c:'#fb923c'},
@@ -448,30 +460,161 @@ function renderKPIs(){
 }
 
 // ─── CHARTS ───────────────────────────────────────
-const BO={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,65,130,.3)'},ticks:{color:'#8baad4',font:{size:11}}},y:{grid:{color:'rgba(30,65,130,.3)'},ticks:{color:'#8baad4',font:{size:11}}}}};
+// ── REGISTRO GLOBAL DATALABELS ────────────────────────────────────────────
+Chart.register(ChartDataLabels);
+
+// ── BASE OPTIONS ──────────────────────────────────────────────────────────
+const BO={
+  responsive:true,maintainAspectRatio:false,
+  plugins:{
+    legend:{display:false},
+    datalabels:{display:false}  // desativado por padrão, ativo por chart
+  },
+  scales:{
+    x:{grid:{color:'rgba(30,65,130,.3)'},ticks:{color:'#8baad4',font:{size:11}}},
+    y:{grid:{color:'rgba(30,65,130,.3)'},ticks:{color:'#8baad4',font:{size:11}}}
+  }
+};
+
+// ── DATE PARSER (suporta dd/MM/yyyy HH:mm:ss e ISO) ──────────────────────
+function parseBRDate(str){
+  if(!str) return null;
+  const s = String(str).trim();
+  // dd/MM/yyyy HH:mm:ss  ou  dd/MM/yyyy
+  const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m){
+    const [,d,mo,y,hh='00',mm='00',ss='00'] = m;
+    const dt = new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
+    return isNaN(dt) ? null : dt;
+  }
+  const dt = new Date(s);
+  return isNaN(dt) ? null : dt;
+}
 function buildCharts(){
   const d=allData;
-  const gm={};d.forEach(x=>{if(!x.gestor)return;if(!gm[x.gestor])gm[x.gestor]={t:0,p:0};gm[x.gestor].t++;if(x.tipo==='Positivo'||x.tipo==='Elogio')gm[x.gestor].p++;});
+
+  // ── GRÁFICO 1: Feedbacks por Gestor (só Total, com rótulos) ──────────────
+  const gm={};
+  d.forEach(x=>{if(!x.gestor)return;gm[x.gestor]=(gm[x.gestor]||0)+1;});
+  const gLabels=Object.keys(gm).map(g=>g.split(' ')[0]);
+  const gVals=Object.values(gm);
   if(charts.g)charts.g.destroy();
-  charts.g=new Chart(document.getElementById('cG'),{type:'bar',data:{labels:Object.keys(gm).map(g=>g.split(' ')[0]),datasets:[{label:'Total',data:Object.values(gm).map(v=>v.t),backgroundColor:'rgba(56,189,248,.7)',borderRadius:5},{label:'Positivos',data:Object.values(gm).map(v=>v.p),backgroundColor:'rgba(52,211,153,.7)',borderRadius:5}]},options:{...BO,plugins:{legend:{display:true,labels:{color:'#8baad4',font:{size:11}}}}}});
-  const wm={};d.forEach(x=>{const dt=x._ts;if(!dt||isNaN(dt))return;const ws=new Date(dt);ws.setDate(dt.getDate()-dt.getDay());const k=ws.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});wm[k]=(wm[k]||0)+1;});
-  const we=Object.entries(wm).slice(-8);
+  charts.g=new Chart(document.getElementById('cG'),{
+    type:'bar',
+    data:{
+      labels:gLabels,
+      datasets:[{
+        label:'Total',
+        data:gVals,
+        backgroundColor:'rgba(56,189,248,.75)',
+        borderRadius:6,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      ...BO,
+      plugins:{
+        legend:{display:false},
+        datalabels:{
+          display:true,
+          anchor:'end',align:'top',
+          color:'#38bdf8',font:{weight:'700',size:12},
+          formatter:v=>v
+        }
+      },
+      layout:{padding:{top:20}}
+    }
+  });
+
+  // ── GRÁFICO 2: Evolução Semanal (últimas 8 semanas, com rótulos) ──────────
+  // Agrupa por semana ISO (segunda-feira como início)
+  const wm={};
+  d.forEach(x=>{
+    const dt=x._ts;
+    if(!dt||isNaN(dt.getTime()))return;
+    // Calcula segunda-feira da semana
+    const day=dt.getDay();           // 0=dom…6=sáb
+    const diff=day===0?-6:1-day;    // dias até a segunda
+    const mon=new Date(dt);
+    mon.setDate(dt.getDate()+diff);
+    mon.setHours(0,0,0,0);
+    const k=mon.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    wm[k]=(wm[k]||0)+1;
+  });
+  // Ordena por data e pega últimas 8 semanas
+  const sortedWeeks=Object.entries(wm).sort((a,b)=>{
+    const pa=a[0].split('/'),pb=b[0].split('/');
+    return new Date(+pa[1],+pa[0]-1,1)-new Date(+pb[1],+pb[0]-1,1)||0;
+  }).slice(-8);
   if(charts.s)charts.s.destroy();
-  charts.s=new Chart(document.getElementById('cS'),{type:'line',data:{labels:we.map(e=>e[0]),datasets:[{label:'Feedbacks',data:we.map(e=>e[1]),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#38bdf8'}]},options:BO});
+  charts.s=new Chart(document.getElementById('cS'),{
+    type:'line',
+    data:{
+      labels:sortedWeeks.map(e=>'Sem '+e[0]),
+      datasets:[{
+        label:'Feedbacks',
+        data:sortedWeeks.map(e=>e[1]),
+        borderColor:'#38bdf8',
+        backgroundColor:'rgba(56,189,248,.12)',
+        fill:true,tension:.4,
+        pointRadius:5,pointBackgroundColor:'#38bdf8',
+        pointBorderColor:'#06091a',pointBorderWidth:2
+      }]
+    },
+    options:{
+      ...BO,
+      plugins:{
+        legend:{display:false},
+        datalabels:{
+          display:true,
+          align:'top',anchor:'top',
+          color:'#fff',font:{weight:'700',size:11},
+          backgroundColor:'rgba(56,189,248,.25)',
+          borderRadius:4,padding:{x:5,y:2},
+          formatter:v=>v
+        }
+      },
+      layout:{padding:{top:24}}
+    }
+  });
+
+  // ── GRÁFICO 3: Distribuição por Tipo (doughnut, com rótulos) ─────────────
   const ti={};d.forEach(x=>{if(x.tipo)ti[x.tipo]=(ti[x.tipo]||0)+1;});
-  const tK=Object.keys(ti),tV=tK.map(k=>ti[k]),tC=tK.map((k,i)=>TIPO_C[k]||PIE_C[i%PIE_C.length]);
+  const tK=Object.keys(ti),tV=tK.map(k=>ti[k]);
+  const PIE_C2=['#34d399','#a78bfa','#fbbf24','#f87171','#fb923c','#38bdf8'];
+  const tC=tK.map((k,i)=>TIPO_C[k]||PIE_C2[i%PIE_C2.length]);
   if(charts.t)charts.t.destroy();
-  charts.t=new Chart(document.getElementById('cT'),{type:'doughnut',data:{labels:tK,datasets:[{data:tV,backgroundColor:tC.map(c=>c+'cc'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
+  charts.t=new Chart(document.getElementById('cT'),{
+    type:'doughnut',
+    data:{labels:tK,datasets:[{data:tV,backgroundColor:tC.map(c=>c+'cc'),borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{
+        legend:{display:false},
+        datalabels:{
+          display:true,
+          color:'#fff',font:{weight:'700',size:11},
+          formatter:(v,ctx)=>{
+            const tot=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+            return Math.round(v/tot*100)+'%';
+          }
+        }
+      }
+    }
+  });
   const tot=tV.reduce((a,b)=>a+b,0);
-  document.getElementById('tLeg').innerHTML=tK.map((k,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px"><div style="width:9px;height:9px;border-radius:50%;background:${tC[i]};flex-shrink:0"></div><span style="color:#c8d8ff;font-size:12px">${k}</span></div><span style="font-size:12px;font-weight:700;color:#fff">${tV[i]} <span style="color:var(--txs);font-weight:400">(${Math.round(tV[i]/tot*100)}%)</span></span></div>`).join('');
-  const nm={};d.forEach(x=>{if(!x.gestor||!+x.nota)return;if(!nm[x.gestor])nm[x.gestor]={s:0,c:0};nm[x.gestor].s+=+x.nota;nm[x.gestor].c++;});
-  const nL=Object.keys(nm).map(g=>g.split(' ')[0]),nV=Object.values(nm).map(v=>+(v.s/v.c).toFixed(1));
-  const nEl=document.getElementById('cN');nEl.parentElement.style.height=Math.max(180,nL.length*44+50)+'px';
-  if(charts.n)charts.n.destroy();
-  charts.n=new Chart(nEl,{type:'bar',data:{labels:nL,datasets:[{label:'Nota',data:nV,backgroundColor:nV.map(v=>nc(v)+'bb'),borderRadius:4}]},options:{...BO,indexAxis:'y',scales:{x:{...BO.scales.x,min:0,max:10},y:BO.scales.y}}});
+  document.getElementById('tLeg').innerHTML=tK.map((k,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="width:9px;height:9px;border-radius:50%;background:${tC[i]};flex-shrink:0"></div>
+        <span style="color:#c8d8ff;font-size:12px">${k}</span>
+      </div>
+      <span style="font-size:12px;font-weight:700;color:#fff">${tV[i]}
+        <span style="color:var(--txs);font-weight:400">(${Math.round(tV[i]/tot*100)}%)</span>
+      </span>
+    </div>`).join('');
 }
 
-// ─── FILTERS + TABLE ──────────────────────────────
 function uniq(k){return[...new Set(allData.map(d=>d[k]).filter(Boolean).map(v=>String(v).trim()))].sort();}
 
 function populateSelects(){
@@ -483,19 +626,15 @@ function populateSelects(){
     s.classList.toggle('active',!!s.value);
   };
   fill('fGestor','gestor','Todos os gestores');
-  fill('fTurno','turno','Todos os turnos');  // ← agora usa campo normalizado
   fill('fTipo','tipo','Todos os tipos');
 }
 
 function applyFilters(){
   fState.gestor=document.getElementById('fGestor').value;
-  fState.turno=document.getElementById('fTurno').value;
   fState.tipo=document.getElementById('fTipo').value;
-  ['fGestor','fTurno','fTipo'].forEach(id=>{const e=document.getElementById(id);e.classList.toggle('active',!!e.value);});
+  ['fGestor','fTipo'].forEach(id=>{const e=document.getElementById(id);e.classList.toggle('active',!!e.value);});
   filteredData=allData.filter(d=>{
-    // Comparação com trim() para evitar espaços extras
     if(fState.gestor && String(d.gestor||'').trim() !== fState.gestor) return false;
-    if(fState.turno  && String(d.turno||'').trim()  !== fState.turno)  return false;
     if(fState.tipo   && String(d.tipo||'').trim()   !== fState.tipo)   return false;
     return true;
   });
@@ -506,8 +645,8 @@ function applyFilters(){
 }
 
 function clearAll(){
-  ['fGestor','fTurno','fTipo'].forEach(id=>{const e=document.getElementById(id);e.value='';e.classList.remove('active');});
-  fState={gestor:'',turno:'',tipo:''};
+  ['fGestor','fTipo'].forEach(id=>{const e=document.getElementById(id);e.value='';e.classList.remove('active');});
+  fState={gestor:'',tipo:''};
   filteredData=[...allData];sortRows();page=1;
   document.getElementById('countLbl').textContent=allData.length+' registros';
   renderActiveChips();renderTable();
@@ -515,7 +654,7 @@ function clearAll(){
 
 function renderActiveChips(){
   const row=document.getElementById('actRow'),cl=document.getElementById('btnClear');
-  const parts=[];const lb={gestor:'Gestor',turno:'Turno',tipo:'Tipo'};
+  const parts=[];const lb={gestor:'Gestor',tipo:'Tipo'};
   Object.entries(fState).forEach(([k,v])=>{if(v)parts.push({k,v,l:lb[k]+': '+v});});
   if(!parts.length){row.style.display='none';cl.style.display='none';return;}
   row.style.display='flex';cl.style.display='inline-flex';
@@ -585,6 +724,7 @@ function secHtml(icon, titulo, conteudo) {
 
 function openFb(id){
   const f=allData.find(d=>d.id===id);if(!f)return;
+  currentFbId=id;
   document.getElementById('mName').textContent=f.colaborador||'—';
   document.getElementById('mSub').textContent=
     (f.tipo ? `Tipo: ${f.tipo}` : '') +
@@ -621,12 +761,105 @@ function openFb(id){
     ${hCards}
     <div class="igrid">${cells.map(r=>`<div class="icell"><div class="ilabel">${r.l}</div><div style="margin-top:2px">${r.h}</div></div>`).join('')}</div>
     ${secHtml('🔍','Causa Raiz', f.causaRaiz)}
-    ${secHtml('⚡','Ações Tomadas', f.acoes)}
-    ${secHtml('🤝','Acordo / Plano', f.acordo)}
+    ${secHtml('⚡','Ações e Acordo', f.acoesEAcordo)}
     ${secHtml('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
     <div class="sec"><div class="sec-t">✍️ Assinatura</div>${sigH}</div>
   `;
   document.getElementById('mFb').style.display='flex';
+}
+
+// ─── PDF GENERATION ───────────────────────────────
+let currentFbId = null;  // tracks which feedback is open
+
+function gerarPDF(){
+  if(currentFbId===null) return;
+  const f=allData.find(d=>d.id===currentFbId);
+  if(!f) return;
+
+  const info=f.colaborador?colabMap[f.colaborador]:null;
+  const dataAtual=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  function row(label,val){
+    return `<tr><td style="padding:7px 10px;font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.05em;width:160px;vertical-align:top">${label}</td><td style="padding:7px 10px;font-size:13px;color:#111;border-left:1px solid #eee">${val||'—'}</td></tr>`;
+  }
+  function sec(icon,titulo,corpo){
+    return `<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;color:#ee4d2d;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;display:flex;align-items:center;gap:5px">${icon} ${titulo}</div><div style="background:#f8f9ff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;font-size:13px;color:#222;line-height:1.7;min-height:40px;white-space:pre-line">${corpo||'<span style="color:#aaa;font-style:italic">Não informado</span>'}</div></div>`;
+  }
+
+  const histHtml=info?`
+    <div style="display:flex;gap:10px;margin-bottom:18px">
+      <div style="flex:1;text-align:center;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px">
+        <div style="font-size:22px;font-weight:800;color:#0284c7">${info.total}</div>
+        <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Total registros</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px">
+        <div style="font-size:22px;font-weight:800;color:#16a34a">${info.positivos}</div>
+        <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Positivos</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px">
+        <div style="font-size:22px;font-weight:800;color:#ca8a04">${info.mediaNota}</div>
+        <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Nota média</div>
+      </div>
+    </div>`:'';
+
+  const assinaturaHtml=f.assinatura
+    ?`<div style="margin-top:8px"><img src="${f.assinatura}" style="max-width:260px;max-height:100px;border:1px solid #e2e8f0;border-radius:6px;padding:6px;background:#fff" /></div>`
+    :'<div style="color:#aaa;font-style:italic;font-size:12px">Assinatura não disponível</div>';
+
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>Feedback – ${f.colaborador||'Colaborador'}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#111;padding:32px;font-size:13px}
+    @media print{body{padding:16px}@page{margin:15mm}}
+  </style>
+  </head><body>
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #ee4d2d">
+    <div>
+      <div style="font-size:10px;color:#ee4d2d;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Shopee Fulfilment · Feedback Operacional</div>
+      <div style="font-size:22px;font-weight:800;color:#111">${f.colaborador||'—'}</div>
+      <div style="font-size:12px;color:#666;margin-top:3px">${f.cad||''} ${f.cad&&f.gestor?' · ':''} Gestor: ${f.gestor||'—'}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;color:#aaa">Gerado em ${dataAtual}</div>
+      <div style="margin-top:8px;display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626">${f.tipo||'—'}</div>
+    </div>
+  </div>
+
+  <!-- DADOS GERAIS -->
+  <div style="margin-bottom:18px">
+    <div style="font-size:11px;font-weight:700;color:#ee4d2d;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">📋 Dados Gerais</div>
+    <table style="width:100%;border-collapse:collapse;background:#f8f9ff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+      ${row('CAD',`<code>${f.cad||'—'}</code>`)}
+      ${row('Data/Hora',f.dataHora)}
+      ${row('Turno',f.turno)}
+      ${row('WMS',f.wms)}
+      ${row('Tipo',f.tipo)}
+      ${row('Gestor',f.gestor)}
+    </table>
+  </div>
+
+  <!-- HISTÓRICO -->
+  ${histHtml}
+
+  <!-- SEÇÕES TEXTUAIS -->
+  ${sec('🔍','Causa Raiz', f.causaRaiz)}
+  ${sec('⚡','Ações e Acordo', f.acoesEAcordo)}
+  ${sec('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
+
+  <!-- ASSINATURA -->
+  <div style="margin-top:18px">
+    <div style="font-size:11px;font-weight:700;color:#ee4d2d;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">✍️ Assinatura</div>
+    ${assinaturaHtml}
+  </div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`;
+
+  const win=window.open('','_blank','width=900,height=700');
+  if(!win){alert('Permita pop-ups para gerar o PDF.');return;}
+  win.document.write(html);
+  win.document.close();
 }
 
 // ─── HELPERS ──────────────────────────────────────
@@ -660,12 +893,12 @@ document.querySelectorAll('th[data-k]').forEach(th=>{
     sortRows();page=1;renderTable();
   });
 });
-['fGestor','fTurno','fTipo'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
+['fGestor','fTipo'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
 document.getElementById('btnClear').addEventListener('click',clearAll);
 document.getElementById('btnRefresh').addEventListener('click',()=>{if(apiUrl)fetchData();});
 document.getElementById('btnExport').addEventListener('click',()=>{
-  const h=['Data/Hora','CAD','Gestor','Colaborador','Turno','Tipo','Total Histórico','Causa Raiz','Ações','Acordo','Plano Acompanhamento'];
-  const rows=filteredData.map(d=>[d.dataHora,d.cad,d.gestor,d.colaborador,d.turno,d.tipo,colabMap[d.colaborador]?.total||0,d.causaRaiz,d.acoes,d.acordo,d.planoAcompanhamento]);
+  const h=['Data/Hora','CAD','Gestor','Colaborador','Turno','Tipo','Total Histórico','Causa Raiz','Ações e Acordo','Plano de Acompanhamento'];
+  const rows=filteredData.map(d=>[d.dataHora,d.cad,d.gestor,d.colaborador,d.turno,d.tipo,colabMap[d.colaborador]?.total||0,d.causaRaiz,d.acoesEAcordo,d.planoAcompanhamento]);
   const csv='\uFEFF'+[h,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='feedbacks_shopee_'+new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);
 });
