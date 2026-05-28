@@ -787,8 +787,7 @@ function openFb(id){
     ${hCards}
     <div class="igrid">${cells.map(r=>`<div class="icell"><div class="ilabel">${r.l}</div><div style="margin-top:2px">${r.h}</div></div>`).join('')}</div>
     ${secHtml('🔍','Causa Raiz', f.causaRaiz || f.causaraiz)}
-    ${secHtml('⚡','Ações Tomadas', f.acoes)}
-    ${secHtml('🤝','Acordo / Comprometimento', f.acordo)}
+    ${secHtml('⚡','Ações e Acordo', f.acoes)}
     ${secHtml('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
     <div class="sec"><div class="sec-t">✍️ Assinatura</div>${sigH}</div>
   `;
@@ -872,8 +871,7 @@ function gerarPDF(){
 
   <!-- SEÇÕES TEXTUAIS -->
   ${sec('🔍','Causa Raiz', f.causaRaiz||f.causaraiz)}
-  ${sec('⚡','Ações Tomadas', f.acoes)}
-  ${sec('🤝','Acordo / Comprometimento', f.acordo)}
+  ${sec('⚡','Ações e Acordo', f.acoes)}
   ${sec('📋','Plano de Acompanhamento', f.planoAcompanhamento)}
 
   <!-- ASSINATURA -->
